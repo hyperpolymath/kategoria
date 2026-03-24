@@ -1,12 +1,18 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
 // Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
-= Type10: Five Routes to Complete Type Safety
+= Kategoria: Five Routes to Complete Type Safety
 :toc: macro
 :toc-title: Contents
 :icons: font
 
 [.lead]
-*Can a single language provide all 10 levels of type safety?*
+*Can a single language provide all known levels of type safety?*
+
+Named after Aristotle's _Κατηγορίαι_ (Categories, ~350 BCE) -- the first
+systematic classification of fundamental types of being. He identified 10
+categories; as of March 2026, type theory has independently arrived at 10
+known levels of type safety. This is probably not a coincidence, and it is
+probably not the end.
 
 This repository explores five distinct approaches to building a language (or
 language system) that covers every known level of type safety -- from basic
@@ -161,7 +167,7 @@ link:routes/epsilon-clean/[Route ε workspace ->]
 All routes share:
 
 * link:shared/test-suite/[*Test suite*] -- 10 challenge programs, one per level,
-  that any valid Type-10 implementation must type-check
+  that any valid Kategoria implementation must type-check
 * link:shared/interface-types/[*Interface types*] -- A common specification for
   what "passing level N" means, written in neutral notation
 * link:shared/benchmarks/[*Benchmarks*] -- Compilation time, proof burden,
@@ -227,6 +233,71 @@ link:progress/[Current progress across all routes ->]
 |===
 
 _(Legend: ✓ = passing, ~ = partial, . = not started, ✗ = proven impossible on this route)_
+
+== Level 11 and Beyond
+
+[IMPORTANT]
+====
+*State of the art as of March 2026.* Type theory is not finished. The 10
+levels above represent our best understanding of the distinct kinds of type
+safety that exist today. If you know of a level we have missed, or if one
+emerges after this date, please open an issue or PR. We would rather discover
+we were wrong than remain confidently incomplete.
+====
+
+The following are *active research areas* that may constitute levels 11+.
+We track them here so that routes can consider them even before they are
+settled, and so that this project remains honest about its boundaries.
+
+[cols="1,3,2,1",options="header"]
+|===
+| Candidate | What It Would Add | Key Researchers (as of 2026) | Maturity
+
+| Graded types
+| Semiring-indexed resource tracking (generalises linear)
+| Orchard, Liepelt, Wadler (Kent/Glasgow); Granule language
+| Working compiler
+
+| Effect types
+| Side effects tracked and controlled in the type system
+| Leijen (MSR, Koka); Lindley (Edinburgh, Frank); Pretnar (Ljubljana, Eff)
+| Production-ready (Koka)
+
+| Modal types
+| Necessity, possibility, time — operators on types
+| Pfenning (CMU); Gratzer (Aarhus, MTT); Agda --guarded
+| 30+ years of theory, limited implementations
+
+| Directed types
+| Types as categories, morphisms as programs
+| Riehl, Shulman (Johns Hopkins); North
+| Very early (2023 preprints, no implementation)
+
+| Capability types
+| Authority-based access control in the type system
+| Clebsch (Pony, now inactive); Aldrich (CMU, Wyvern)
+| Pony proven but language dormant
+
+| Observational equality
+| Different foundation for equality than cubical
+| Altenkirch (Nottingham); Pujet-Tabareau (proved consistent 2022)
+| Alternative to Level 10, not an addition
+
+| Sized types
+| Termination by structural size, not fuel
+| Abel (Gothenburg); Agda team
+| Stable in Agda
+
+| Gradual types
+| Mix static and dynamic typing soundly
+| Siek (Indiana); Greenman (Brown); Typed Racket
+| Mature theory, production use
+|===
+
+If any of these crystallise into a distinct level during this project, we
+will add it to the test suite, extend the progress matrix, and document the
+discovery in `docs/cross-pollination/`. The name _Kategoria_ does not
+promise exactly 10 — it promises we will classify whatever we find.
 
 == License
 
