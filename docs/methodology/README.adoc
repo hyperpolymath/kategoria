@@ -1,0 +1,40 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Methodology: How This Project Works
+:author: Jonathan D.A. Jewell
+
+== Productive Meandering
+
+This project uses *constraint-first productive meandering* -- a methodology
+developed through 6+ sessions of LLM-assisted language development. The core
+loop:
+
+1. *Read state* -- what do we know, what has changed?
+2. *Find the constraint* -- what is the hardest unsolved problem?
+3. *Work the constraint first* -- don't avoid the hard parts
+4. *Build in rings* -- core first, then expand outward
+5. *Ship code* -- 80% building, 20% exploring
+6. *Self-terminate* -- stop when returns diminish
+7. *Produce debt list* -- carry discoveries forward
+
+== LLM Collaboration Transparency
+
+Every route documents:
+
+- *Human decisions:* Architecture choices, aesthetic preferences, scope calls
+- *LLM suggestions:* Implementation details, alternatives explored, code generated
+- *Disagreements:* Where human and LLM diverged, who was right, what we learned
+
+This is not about proving LLMs can or cannot do language design. It is about
+understanding what the collaboration produces that neither could alone.
+
+== Cross-Route Protocol
+
+Each route publishes:
+
+- Weekly progress against the shared test suite
+- Design decision records (ADRs) for every significant fork
+- Stumble journal entries when something fails
+- Shine journal entries when something works unexpectedly well
+
+Other routes are expected to read these and record cross-pollination when
+a discovery transfers.

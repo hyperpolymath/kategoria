@@ -1,0 +1,250 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Type10 Challenge Programs
+:toc:
+
+== Overview
+
+Each level has one canonical challenge program. A route "passes" a level when
+its implementation can type-check (not just run) the challenge, rejecting the
+ill-typed variant at compile time.
+
+Every challenge has:
+
+- *ACCEPT:* A program that must type-check and run correctly
+- *REJECT:* A program that must be rejected by the type checker
+- *PROOF:* The property the type system must guarantee
+
+== Level 1: Basic Types
+
+*Property:* Primitive types cannot be silently coerced.
+
+.Accept
+----
+let x : Int = 42
+let y : String = "hello"
+let z : Int = x + 1       -- OK: Int + Int
+----
+
+.Reject
+----
+let z : Int = x + y        -- MUST reject: Int + String
+----
+
+== Level 2: Algebraic Data Types
+
+*Property:* Pattern matches must be exhaustive; missing cases are compile errors.
+
+.Accept
+----
+data Shape = Circle Float | Rect Float Float
+
+area : Shape -> Float
+area (Circle r) = pi * r * r
+area (Rect w h) = w * h     -- All constructors handled
+----
+
+.Reject
+----
+area : Shape -> Float
+area (Circle r) = pi * r * r
+-- MUST reject: missing Rect case
+----
+
+== Level 3: Parametric Polymorphism
+
+*Property:* Generic code cannot inspect the type parameter.
+
+.Accept
+----
+id : forall a. a -> a
+id x = x
+
+pair : forall a b. a -> b -> (a, b)
+pair x y = (x, y)
+----
+
+.Reject
+----
+bad : forall a. a -> Int
+bad x = x + 1               -- MUST reject: cannot assume a is Int
+----
+
+== Level 4: Higher-Kinded Types
+
+*Property:* Type constructors can be abstracted over.
+
+.Accept
+----
+interface Functor (f : Type -> Type) where
+  map : (a -> b) -> f a -> f b
+
+-- List is a Functor
+Functor List where
+  map f []      = []
+  map f (x::xs) = f x :: map f xs
+----
+
+.Reject
+----
+Functor Int where            -- MUST reject: Int is Type, not Type -> Type
+  map f x = f x
+----
+
+== Level 5: GADTs
+
+*Property:* Type indices constrain which constructors can appear.
+
+.Accept
+----
+data Expr : Type -> Type where
+  LitI : Int  -> Expr Int
+  LitB : Bool -> Expr Bool
+  Add  : Expr Int -> Expr Int -> Expr Int
+  If   : Expr Bool -> Expr a -> Expr a -> Expr a
+
+eval : Expr a -> a
+eval (LitI n)    = n
+eval (LitB b)    = b
+eval (Add e1 e2) = eval e1 + eval e2
+eval (If c t e)  = if eval c then eval t else eval e
+----
+
+.Reject
+----
+bad : Expr Int
+bad = Add (LitI 1) (LitB True)  -- MUST reject: Bool where Int expected
+----
+
+== Level 6: Dependent Types
+
+*Property:* Types depend on runtime values; length-indexed vectors.
+
+.Accept
+----
+data Vect : Nat -> Type -> Type where
+  Nil  : Vect 0 a
+  (::) : a -> Vect n a -> Vect (S n) a
+
+append : Vect n a -> Vect m a -> Vect (n + m) a
+append Nil       ys = ys
+append (x :: xs) ys = x :: append xs ys
+
+head : Vect (S n) a -> a   -- Cannot be called on empty vector
+head (x :: _) = x
+----
+
+.Reject
+----
+bad : a
+bad = head Nil               -- MUST reject: Vect 0 a is not Vect (S n) a
+----
+
+== Level 7: Linear Types
+
+*Property:* Resources must be used exactly once.
+
+.Accept
+----
+open : (1 _ : FilePath) -> IO (1 _ : Handle)
+close : (1 _ : Handle) -> IO ()
+
+readAndClose : FilePath -> IO String
+readAndClose path = do
+  handle <- open path          -- handle has multiplicity 1
+  content <- read handle       -- consumes handle linearly
+  close handle                 -- wait, already consumed!
+  -- Actually:
+  (content, handle') <- readL handle  -- returns new linear handle
+  close handle'                       -- close the new handle
+  pure content
+----
+
+.Reject
+----
+leak : FilePath -> IO String
+leak path = do
+  handle <- open path
+  content <- readL handle
+  pure content                 -- MUST reject: handle' not closed (linear var unused)
+----
+
+== Level 8: Refinement Types
+
+*Property:* Value predicates checked at compile time.
+
+.Accept
+----
+type Positive = { x : Int | x > 0 }
+
+safeDiv : Int -> Positive -> Int
+safeDiv n d = n / d.value      -- Division by zero is impossible
+
+example : Int
+example = safeDiv 10 (refine 3)  -- OK: 3 > 0
+----
+
+.Reject
+----
+bad : Int
+bad = safeDiv 10 (refine 0)   -- MUST reject: 0 is not > 0
+bad2 = safeDiv 10 (refine (-5)) -- MUST reject: -5 is not > 0
+----
+
+== Level 9: Session Types
+
+*Property:* Communication follows a typed protocol; out-of-order messages
+are compile errors.
+
+.Accept
+----
+-- Protocol: Client sends Int, receives Bool, done.
+type Arith = Send Int (Recv Bool End)
+
+client : Channel Arith -> IO ()
+client ch = do
+  ch <- send ch 42             -- Send Int (matches protocol)
+  (result, ch) <- recv ch      -- Receive Bool (matches protocol)
+  close ch                     -- End (matches protocol)
+----
+
+.Reject
+----
+bad : Channel Arith -> IO ()
+bad ch = do
+  (result, ch) <- recv ch      -- MUST reject: protocol says Send first
+  ch <- send ch 42
+  close ch
+----
+
+== Level 10: Homotopy / Cubical Types
+
+*Property:* Type equivalences are first-class; univalence holds.
+
+.Accept
+----
+-- Bool ≃ Bool has exactly two equivalences: id and not
+boolEquiv : (Bool ≃ Bool) ≃ Bool
+boolEquiv = ...                -- Provable in cubical type theory
+
+-- Transport along a path: if A ≃ B, use A's structure on B
+transport : A ≡ B -> A -> B
+
+-- Univalence: equivalence of types IS equality of types
+ua : A ≃ B -> A ≡ B
+----
+
+.Reject
+----
+-- Cannot construct a path that does not respect structure
+bad : Nat ≡ Bool               -- MUST reject: Nat and Bool are not equivalent
+bad = ua ???                   -- No equivalence Nat ≃ Bool exists
+----
+
+== Scoring
+
+A route scores each level as:
+
+- *✓ (pass):* Both ACCEPT and REJECT work as specified
+- *~ (partial):* ACCEPT works but REJECT is not fully enforced
+- *✗ (impossible):* The route's architecture provably cannot support this level
+- *. (not attempted):* Work has not reached this level yet

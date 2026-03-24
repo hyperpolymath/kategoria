@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= ADR-001: Five Routes Rather Than One
+:status: accepted
+:date: 2026-03-24
+:author: Jonathan D.A. Jewell
+
+== Context
+
+The goal is to reach "Type-10" -- a language or language system that provides
+all 10 known levels of type safety. The naive approach is to pick one strategy
+and pursue it. But we don't know which approach will work, and the design
+space is largely unmapped.
+
+== Decision
+
+We pursue five routes in parallel, sharing infrastructure (test suite,
+interface types, benchmarks) but diverging in approach:
+
+- *α (Extend):* Modify Idris 2 via elaborator reflection
+- *β (Dyadic):* Two type checkers sharing syntax (Ephapax pattern)
+- *γ (Aspect):* Modular type-checking aspects woven into pipeline
+- *δ (Aggregate):* Bridge existing languages via ABI/FFI
+- *ε (Clean Slate):* New core calculus from scratch
+
+== Rationale
+
+1. *Risk distribution:* If one route hits a wall (as α will at level 10),
+   the others continue.
+2. *Cross-pollination:* Discoveries on one route inform the others. The
+   stumble/shine journals make this explicit.
+3. *Methodology research:* Comparing how different approaches fare under
+   the same constraints teaches us about language development itself.
+4. *Community engagement:* Multiple routes mean multiple entry points for
+   contributors with different backgrounds.
+
+== Consequences
+
+- Higher total effort than a single route
+- Requires disciplined documentation to enable cross-pollination
+- Progress will be uneven -- some routes will stall while others advance
+- The shared test suite becomes the single source of truth for "what counts"

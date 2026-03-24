@@ -1,0 +1,237 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
+= Type10: Five Routes to Complete Type Safety
+:toc: macro
+:toc-title: Contents
+:icons: font
+
+[.lead]
+*Can a single language provide all 10 levels of type safety?*
+
+This repository explores five distinct approaches to building a language (or
+language system) that covers every known level of type safety -- from basic
+types to homotopy type theory. It is simultaneously:
+
+- A *research project* documenting real design decisions, dead ends, and breakthroughs
+- A *programming challenge* others can fork and attempt
+- A *showcase* of language development methodology with LLM collaboration
+- A *living comparison* of approaches that cross-pollinates discoveries
+
+toc::[]
+
+== The 10 Levels
+
+[cols="1,3,3,2",options="header"]
+|===
+| Level | What It Proves | Example | First Appeared
+
+| 1. Basic Types
+| int vs string -- no mixing
+| `1 + "hello"` rejected
+| FORTRAN (1957)
+
+| 2. Algebraic Data Types
+| Sum/product types, pattern exhaustiveness
+| `Option<T>` forces handling `None`
+| ML (1973)
+
+| 3. Parametric Polymorphism
+| Generics, free theorems
+| `fn id<T>(x: T) -> T`
+| System F (1972)
+
+| 4. Higher-Kinded Types
+| Types of types -- Functor, Monad
+| `trait Functor<F<_>>`
+| Haskell (1990)
+
+| 5. GADTs
+| Type indices constrain constructors
+| `Expr<Int>` vs `Expr<Bool>`
+| GHC ~2005
+
+| 6. Dependent Types
+| Types computed from values, proofs-as-programs
+| `Vec n a` -- length in the type
+| LF (1986), Coq, Agda, Idris
+
+| 7. Linear / Affine Types
+| Resource usage -- exactly once / at most once
+| File handle must be closed exactly once
+| Linear Logic (1987), Rust, Idris 2
+
+| 8. Refinement Types
+| Predicates on values
+| `{x : Int \| x > 0}` -- positive integers only
+| PVS (1992), Liquid Haskell
+
+| 9. Session Types
+| Typed communication protocols
+| Channel must send Int then receive Bool then close
+| Honda (1993), Scribble
+
+| 10. Homotopy / Cubical Types
+| Paths between types, univalence
+| `Bool ≃ Bool` has exactly two paths (id and not)
+| HoTT (2013), cubicaltt, Agda --cubical
+|===
+
+No single production language covers all 10 today. *That is the challenge.*
+
+== The Five Routes
+
+Each route takes a fundamentally different approach. They share a common test
+suite and interface type specification, so progress is directly comparable.
+
+=== Route α (Alpha): Extend Idris 2
+
+*Strategy:* Start from the strongest existing foundation (Idris 2 covers
+levels 1-7 natively) and push upward using elaborator reflection and
+compiler plugins.
+
+* Level 8: Refinement types via elaborator-generated dependent pairs
+* Level 9: Session types via Brady's published encoding + nicer syntax
+* Level 10: *The wall* -- QTT and cubical type theory are different foundations
+
+*Key question:* How far can elaborator reflection take you before you hit
+the core calculus boundary?
+
+link:routes/alpha-extend/[Route α workspace ->]
+
+=== Route β (Beta): Dyadic Split
+
+*Strategy:* Two languages sharing syntax, parser, and module system that
+*diverge at the type checker*. Inspired by Ephapax's region-linear fusion.
+
+* *Language β-1 (workhorse):* QTT core (levels 1-7, plus 8 via elaborator)
+* *Language β-2 (prover):* Cubical core (levels 8-10, without QTT linearity)
+* *Bridge:* Shared ABI layer, proofs from β-2 compile to witnesses β-1 consumes
+
+*Key question:* Can the bridge be sound without a unified metatheory?
+
+link:routes/beta-dyadic/[Route β workspace ->]
+
+=== Route γ (Gamma): Aspect Injection
+
+*Strategy:* Keep a stable core language and weave type-checking aspects into
+the compilation pipeline at defined points. Each aspect is independent and
+can be developed in parallel.
+
+* *Core:* Dependent types + QTT (levels 1-7)
+* *Aspect 1:* SMT-backed refinement checker (level 8)
+* *Aspect 2:* Protocol verifier for session types (level 9)
+* *Aspect 3:* Cubical checker for path equality (level 10)
+
+*Key question:* Can three independent type checkers compose soundly when a
+single proof spans multiple levels?
+
+link:routes/gamma-aspect/[Route γ workspace ->]
+
+=== Route δ (Delta): Aggregate Bridge
+
+*Strategy:* Use existing best-in-class languages for each level range and
+bridge them through a shared ABI/FFI standard (Idris 2 ABI + Zig FFI).
+
+* Idris 2: levels 1-7
+* F* or Liquid Haskell: level 8
+* Scribble / multiparty session types: level 9
+* Agda --cubical: level 10
+
+*Key question:* Can ABI contracts preserve type safety across language
+boundaries without re-verification?
+
+link:routes/delta-aggregate/[Route δ workspace ->]
+
+=== Route ε (Epsilon): Clean Slate
+
+*Strategy:* Design a new core calculus from scratch that unifies QTT,
+cubical type theory, refinement predicates, and session types from the
+ground up.
+
+* Drawing on: Nuyts/Gratzer/Sterling research on linear + cubical
+* No legacy constraints
+* Highest risk, highest potential reward
+
+*Key question:* Is there a consistent type theory that subsumes all 10 levels?
+
+link:routes/epsilon-clean/[Route ε workspace ->]
+
+== Shared Infrastructure
+
+All routes share:
+
+* link:shared/test-suite/[*Test suite*] -- 10 challenge programs, one per level,
+  that any valid Type-10 implementation must type-check
+* link:shared/interface-types/[*Interface types*] -- A common specification for
+  what "passing level N" means, written in neutral notation
+* link:shared/benchmarks/[*Benchmarks*] -- Compilation time, proof burden,
+  lines of code for equivalent safety guarantees
+
+== How to Participate
+
+1. *Fork this repository*
+2. Pick a route (or propose a sixth)
+3. Work through the levels, documenting decisions in `docs/`
+4. Submit progress updates as PRs
+5. Read other routes' stumble journals -- the failures teach more than successes
+
+There is no winner. The point is to *map the territory*.
+
+== Documentation
+
+[cols="1,3",options="header"]
+|===
+| Document | Purpose
+
+| link:docs/design-decisions/[Design Decisions]
+| ADR-style records for every fork in the road
+
+| link:docs/stumble-journal/[Stumble Journal]
+| What went wrong, why, and what we learned
+
+| link:docs/shine-journal/[Shine Journal]
+| What worked unexpectedly well
+
+| link:docs/cross-pollination/[Cross-Pollination]
+| Discoveries from one route that helped another
+
+| link:docs/methodology/[Methodology]
+| How we work -- productive meandering, constraint-first development, LLM collaboration patterns
+|===
+
+== Methodology
+
+This project uses
+https://github.com/hyperpolymath/methodologies[Productive Meandering] -- a
+constraint-first development methodology designed for exploratory work where
+the destination is known but the path is not. Each route meanders through its
+design space, constrained by the shared test suite and interface types.
+
+Every route is developed with LLM collaboration (primarily Claude), with full
+transparency about what the human decided, what the LLM suggested, and where
+they disagreed. The `docs/methodology/` directory contains field reports.
+
+== Progress
+
+link:progress/[Current progress across all routes ->]
+
+[cols="1,1,1,1,1,1,1,1,1,1,1",options="header"]
+|===
+| Route | L1 | L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10
+
+| α Extend     | . | . | . | . | . | . | . | . | . | .
+| β Dyadic     | . | . | . | . | . | . | . | . | . | .
+| γ Aspect     | . | . | . | . | . | . | . | . | . | .
+| δ Aggregate  | . | . | . | . | . | . | . | . | . | .
+| ε Clean      | . | . | . | . | . | . | . | . | . | .
+|===
+
+_(Legend: ✓ = passing, ~ = partial, . = not started, ✗ = proven impossible on this route)_
+
+== License
+
+PMPL-1.0-or-later (Palimpsest License)
+
+== Author
+
+Jonathan D.A. Jewell (https://github.com/hyperpolymath[hyperpolymath])
