@@ -1,187 +1,225 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
 // Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath)
-= Kategoria: Five Routes to Complete Type Safety
+= Kategoria: The Type Safety Challenge
 :toc: macro
 :toc-title: Contents
 :icons: font
 
 [.lead]
-*Can a single language provide all known levels of type safety?*
+*Five approaches to building a language with every known level of type
+safety. A programming language development project.*
 
 Named after Aristotle's _Κατηγορίαι_ (Categories, ~350 BCE) -- the first
-systematic classification of fundamental types of being. He identified 10
-categories; as of March 2026, type theory has independently arrived at 10
-known levels of type safety. This is probably not a coincidence, and it is
-probably not the end.
-
-This repository explores five distinct approaches to building a language (or
-language system) that covers every known level of type safety -- from basic
-types to homotopy type theory. It is simultaneously:
-
-- A *research project* documenting real design decisions, dead ends, and breakthroughs
-- A *programming challenge* others can fork and attempt
-- A *showcase* of language development methodology with LLM collaboration
-- A *living comparison* of approaches that cross-pollinates discoveries
+systematic attempt to classify the fundamental kinds of things that exist.
+He identified 10 categories. As of March 2026, type theory has independently
+arrived at 10 known levels of type safety. This is probably not a
+coincidence, and it is probably not the end.
 
 toc::[]
 
-== The 10 Levels
+== Why This Exists
+
+Type theory is one of the most practically important areas in computer
+science, and one of the least recognised.
+
+Every time a compiler catches a bug before your code runs, that is type
+theory. Every time Rust prevents a use-after-free, or Haskell forces you
+to handle a missing value, or Idris proves your parser terminates -- type
+theory is doing the work. It is the invisible engineering behind "it just
+works."
+
+And yet:
+
+- Most working programmers have never heard the term
+- Most PL courses stop at generics (level 3 of 10)
+- Most "type-safe" languages cover 3-4 levels at best
+- The research that could eliminate entire categories of bugs sits in papers
+  that practising developers will never read
+
+This project exists to change that, one level at a time.
+
+=== What this is
+
+This is a *programming language development project*. We build compilers,
+type checkers, and tools. We use type theory the way a carpenter uses
+geometry -- as a means to an end, not an end in itself.
+
+We are language developers, not mathematicians. Where the mathematics is
+settled, we implement it. Where it is not, we document what we tried, what
+broke, and what we learned. If we get the maths wrong, we would rather be
+corrected than be silently wrong -- that is literally the point of type
+safety.
+
+=== What this is not
+
+This is not an attempt to advance the state of mathematical type theory.
+People at CMU, Edinburgh, Gothenburg, Nottingham, and elsewhere have spent
+decades on that work and we stand on their shoulders gratefully. What we
+are doing is *engineering*: taking those ideas and finding out what happens
+when you try to put all of them into one language at once. Nobody has done
+that. We want to find out why.
+
+== The 10 Known Levels (as of March 2026)
 
 [cols="1,3,3,2",options="header"]
 |===
-| Level | What It Proves | Example | First Appeared
+| Level | What It Catches | Example | First Appeared
 
 | 1. Basic Types
-| int vs string -- no mixing
-| `1 + "hello"` rejected
+| Mixing incompatible primitives
+| `1 + "hello"` rejected at compile time
 | FORTRAN (1957)
 
 | 2. Algebraic Data Types
-| Sum/product types, pattern exhaustiveness
-| `Option<T>` forces handling `None`
+| Missing cases, impossible states
+| `Option<T>` forces you to handle `None`
 | ML (1973)
 
 | 3. Parametric Polymorphism
-| Generics, free theorems
-| `fn id<T>(x: T) -> T`
+| Accidental type assumptions in generic code
+| `fn id<T>(x: T) -> T` cannot inspect `T`
 | System F (1972)
 
 | 4. Higher-Kinded Types
-| Types of types -- Functor, Monad
-| `trait Functor<F<_>>`
+| Incompatible abstractions
+| `List` and `Option` are both `Functor` -- abstract over that
 | Haskell (1990)
 
 | 5. GADTs
-| Type indices constrain constructors
-| `Expr<Int>` vs `Expr<Bool>`
-| GHC ~2005
+| Ill-typed expressions in DSLs
+| `Expr<Int>` vs `Expr<Bool>` -- the type system tracks your language's types
+| GHC (~2005)
 
 | 6. Dependent Types
-| Types computed from values, proofs-as-programs
-| `Vec n a` -- length in the type
+| Logical errors provable at compile time
+| `Vec 3 Int` -- the length is in the type; `head` on empty is a type error
 | LF (1986), Coq, Agda, Idris
 
 | 7. Linear / Affine Types
-| Resource usage -- exactly once / at most once
-| File handle must be closed exactly once
+| Resource leaks, double-free, use-after-close
+| File handle *must* be closed exactly once -- compiler enforces it
 | Linear Logic (1987), Rust, Idris 2
 
 | 8. Refinement Types
-| Predicates on values
-| `{x : Int \| x > 0}` -- positive integers only
+| Violated preconditions
+| `{x : Int \| x > 0}` -- division by zero is a *type error*
 | PVS (1992), Liquid Haskell
 
 | 9. Session Types
-| Typed communication protocols
-| Channel must send Int then receive Bool then close
+| Protocol violations in communication
+| Send Int, then receive Bool, then close -- out-of-order is a type error
 | Honda (1993), Scribble
 
 | 10. Homotopy / Cubical Types
-| Paths between types, univalence
-| `Bool ≃ Bool` has exactly two paths (id and not)
+| Unsound type equivalences
+| `Bool ≃ Bool` has exactly two valid equivalences -- the type system knows
 | HoTT (2013), cubicaltt, Agda --cubical
 |===
 
-No single production language covers all 10 today. *That is the challenge.*
+No single production language covers all 10 today. Most cover 3-4. The best
+(Idris 2) covers 7. *That gap is the challenge.*
 
 == The Five Routes
 
-Each route takes a fundamentally different approach. They share a common test
-suite and interface type specification, so progress is directly comparable.
+We do not know which approach will work. So we try five, share what we learn
+between them, and document everything -- including the failures.
+
+Each route shares a common link:shared/test-suite/[test suite] (10 challenge
+programs, one per level) and link:shared/interface-types/[interface type
+specification], so progress is directly comparable.
 
 === Route α (Alpha): Extend Idris 2
 
-*Strategy:* Start from the strongest existing foundation (Idris 2 covers
-levels 1-7 natively) and push upward using elaborator reflection and
-compiler plugins.
+Start from the strongest existing foundation and push upward using
+elaborator reflection and compiler plugins.
 
+* Levels 1-7: native in Idris 2
 * Level 8: Refinement types via elaborator-generated dependent pairs
-* Level 9: Session types via Brady's published encoding + nicer syntax
+* Level 9: Session types via Brady's published encoding
 * Level 10: *The wall* -- QTT and cubical type theory are different foundations
 
-*Key question:* How far can elaborator reflection take you before you hit
-the core calculus boundary?
-
-link:routes/alpha-extend/[Route α workspace ->]
+*Key question:* How far can you extend a language before you need to replace
+its core?
 
 === Route β (Beta): Dyadic Split
 
-*Strategy:* Two languages sharing syntax, parser, and module system that
-*diverge at the type checker*. Inspired by Ephapax's region-linear fusion.
+Two languages sharing syntax, parser, and module system that *diverge at the
+type checker*. Inspired by
+https://github.com/hyperpolymath/nextgen-languages[Ephapax]'s region-linear
+fusion approach.
 
-* *Language β-1 (workhorse):* QTT core (levels 1-7, plus 8 via elaborator)
-* *Language β-2 (prover):* Cubical core (levels 8-10, without QTT linearity)
-* *Bridge:* Shared ABI layer, proofs from β-2 compile to witnesses β-1 consumes
+* *β-1 (workhorse):* QTT core (levels 1-7, plus 8 via elaborator)
+* *β-2 (prover):* Cubical core (levels 8-10)
+* *Bridge:* Shared ABI layer; proofs from β-2 compile to witnesses β-1 consumes
 
-*Key question:* Can the bridge be sound without a unified metatheory?
-
-link:routes/beta-dyadic/[Route β workspace ->]
+*Key question:* Can two type checkers share enough to feel like one language?
 
 === Route γ (Gamma): Aspect Injection
 
-*Strategy:* Keep a stable core language and weave type-checking aspects into
-the compilation pipeline at defined points. Each aspect is independent and
-can be developed in parallel.
+Keep a stable core language and weave type-checking *aspects* into the
+compilation pipeline at defined points. Each aspect is independent.
 
 * *Core:* Dependent types + QTT (levels 1-7)
 * *Aspect 1:* SMT-backed refinement checker (level 8)
 * *Aspect 2:* Protocol verifier for session types (level 9)
 * *Aspect 3:* Cubical checker for path equality (level 10)
 
-*Key question:* Can three independent type checkers compose soundly when a
-single proof spans multiple levels?
-
-link:routes/gamma-aspect/[Route γ workspace ->]
+*Key question:* Can independent type checkers compose when a single proof
+needs guarantees from multiple levels?
 
 === Route δ (Delta): Aggregate Bridge
 
-*Strategy:* Use existing best-in-class languages for each level range and
-bridge them through a shared ABI/FFI standard (Idris 2 ABI + Zig FFI).
+Use existing best-in-class languages for each level range and bridge them
+through a shared ABI/FFI standard.
 
 * Idris 2: levels 1-7
 * F* or Liquid Haskell: level 8
 * Scribble / multiparty session types: level 9
 * Agda --cubical: level 10
 
-*Key question:* Can ABI contracts preserve type safety across language
-boundaries without re-verification?
-
-link:routes/delta-aggregate/[Route δ workspace ->]
+*Key question:* Can type safety survive crossing a language boundary?
 
 === Route ε (Epsilon): Clean Slate
 
-*Strategy:* Design a new core calculus from scratch that unifies QTT,
-cubical type theory, refinement predicates, and session types from the
-ground up.
+Design a new core calculus that unifies everything from the ground up.
 
-* Drawing on: Nuyts/Gratzer/Sterling research on linear + cubical
+* Drawing on Nuyts, Gratzer, Sterling on combining linearity with cubical
 * No legacy constraints
 * Highest risk, highest potential reward
 
-*Key question:* Is there a consistent type theory that subsumes all 10 levels?
-
-link:routes/epsilon-clean/[Route ε workspace ->]
-
-== Shared Infrastructure
-
-All routes share:
-
-* link:shared/test-suite/[*Test suite*] -- 10 challenge programs, one per level,
-  that any valid Kategoria implementation must type-check
-* link:shared/interface-types/[*Interface types*] -- A common specification for
-  what "passing level N" means, written in neutral notation
-* link:shared/benchmarks/[*Benchmarks*] -- Compilation time, proof burden,
-  lines of code for equivalent safety guarantees
+*Key question:* Is there a consistent type theory that subsumes all 10
+levels, or is the fragmentation fundamental?
 
 == How to Participate
 
 1. *Fork this repository*
-2. Pick a route (or propose a sixth)
-3. Work through the levels, documenting decisions in `docs/`
+2. Pick a route (or propose a new one)
+3. Work through the levels, documenting your decisions in `docs/`
 4. Submit progress updates as PRs
-5. Read other routes' stumble journals -- the failures teach more than successes
+5. Read other routes' stumble journals -- the failures teach more than the successes
 
 There is no winner. The point is to *map the territory*.
+
+=== If you are a type theorist
+
+We need you. Not to do the engineering -- we have that covered -- but to
+tell us when we are wrong. If a route makes an unsound assumption, or
+misunderstands a theorem, or reinvents something that was solved in 1988,
+we want to know. Open an issue. The whole point of type safety is catching
+errors early, and that applies to our own work too.
+
+=== If you are a language developer
+
+This is your project. Each route is a self-contained language development
+effort with real compilers, real type checkers, and real design decisions.
+The challenge programs in `shared/test-suite/` are concrete and testable.
+Pick a route and start building.
+
+=== If you are just curious
+
+Read the link:docs/stumble-journal/[stumble journal]. It is the most
+interesting part. Watching five different approaches hit five different
+walls teaches you more about type theory than any textbook.
 
 == Documentation
 
@@ -202,24 +240,23 @@ There is no winner. The point is to *map the territory*.
 | Discoveries from one route that helped another
 
 | link:docs/methodology/[Methodology]
-| How we work -- productive meandering, constraint-first development, LLM collaboration patterns
+| How we work -- constraint-first development, LLM collaboration patterns
 |===
 
 == Methodology
 
 This project uses
 https://github.com/hyperpolymath/methodologies[Productive Meandering] -- a
-constraint-first development methodology designed for exploratory work where
-the destination is known but the path is not. Each route meanders through its
-design space, constrained by the shared test suite and interface types.
+constraint-first development methodology for exploratory work where the
+destination is known but the path is not.
 
-Every route is developed with LLM collaboration (primarily Claude), with full
-transparency about what the human decided, what the LLM suggested, and where
-they disagreed. The `docs/methodology/` directory contains field reports.
+Every route is developed with LLM collaboration (primarily
+https://claude.ai[Claude]), with full transparency about what the human
+decided, what the LLM suggested, and where they disagreed. We believe this
+transparency is more useful to the field than pretending either party did it
+alone. The `docs/methodology/` directory contains field reports.
 
 == Progress
-
-link:progress/[Current progress across all routes ->]
 
 [cols="1,1,1,1,1,1,1,1,1,1,1",options="header"]
 |===
@@ -232,7 +269,7 @@ link:progress/[Current progress across all routes ->]
 | ε Clean      | . | . | . | . | . | . | . | . | . | .
 |===
 
-_(Legend: ✓ = passing, ~ = partial, . = not started, ✗ = proven impossible on this route)_
+_(✓ = passing, ~ = partial, . = not started, ✗ = proven impossible on this route)_
 
 == Level 11 and Beyond
 
@@ -241,13 +278,13 @@ _(Legend: ✓ = passing, ~ = partial, . = not started, ✗ = proven impossible o
 *State of the art as of March 2026.* Type theory is not finished. The 10
 levels above represent our best understanding of the distinct kinds of type
 safety that exist today. If you know of a level we have missed, or if one
-emerges after this date, please open an issue or PR. We would rather discover
-we were wrong than remain confidently incomplete.
+emerges after this date, please open an issue. We would rather discover we
+were wrong than remain confidently incomplete.
 ====
 
-The following are *active research areas* that may constitute levels 11+.
-We track them here so that routes can consider them even before they are
-settled, and so that this project remains honest about its boundaries.
+The following are active research areas that may constitute future levels.
+We track them so that routes can consider them early, and so that this
+project stays honest about what it does not yet know.
 
 [cols="1,3,2,1",options="header"]
 |===
@@ -264,7 +301,7 @@ settled, and so that this project remains honest about its boundaries.
 | Production-ready (Koka)
 
 | Modal types
-| Necessity, possibility, time — operators on types
+| Necessity, possibility, temporality as type operators
 | Pfenning (CMU); Gratzer (Aarhus, MTT); Agda --guarded
 | 30+ years of theory, limited implementations
 
@@ -275,33 +312,40 @@ settled, and so that this project remains honest about its boundaries.
 
 | Capability types
 | Authority-based access control in the type system
-| Clebsch (Pony, now inactive); Aldrich (CMU, Wyvern)
-| Pony proven but language dormant
+| Clebsch (Pony, now dormant); Aldrich (CMU, Wyvern)
+| Proven in Pony, language inactive
 
 | Observational equality
-| Different foundation for equality than cubical
-| Altenkirch (Nottingham); Pujet-Tabareau (proved consistent 2022)
-| Alternative to Level 10, not an addition
+| Alternative foundation for equality (not cubical)
+| Altenkirch (Nottingham); Pujet-Tabareau (consistent, 2022)
+| May replace Level 10 rather than extend it
 
 | Sized types
-| Termination by structural size, not fuel
+| Termination guaranteed by structural size
 | Abel (Gothenburg); Agda team
 | Stable in Agda
 
 | Gradual types
-| Mix static and dynamic typing soundly
+| Sound mixing of static and dynamic typing
 | Siek (Indiana); Greenman (Brown); Typed Racket
 | Mature theory, production use
 |===
 
 If any of these crystallise into a distinct level during this project, we
-will add it to the test suite, extend the progress matrix, and document the
-discovery in `docs/cross-pollination/`. The name _Kategoria_ does not
-promise exactly 10 — it promises we will classify whatever we find.
+will extend the test suite and the progress matrix. The name _Kategoria_
+does not promise exactly 10 -- it promises we will classify whatever we find.
+
+== Acknowledgements
+
+This project builds on decades of work by people who will never see this
+repository. The type theory that makes levels 1-10 possible was developed
+by Russell, Church, Curry, Howard, Martin-Löf, Girard, Wadler, Brady,
+Voevodsky, and hundreds of others. We are language developers applying their
+ideas. If we get something wrong, blame us, not them.
 
 == License
 
-PMPL-1.0-or-later (Palimpsest License)
+PMPL-1.0-or-later (https://github.com/hyperpolymath/palimpsest-license[Palimpsest License])
 
 == Author
 
