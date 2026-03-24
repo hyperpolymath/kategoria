@@ -1,0 +1,53 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Route α: Extend Idris 2
+:author: Jonathan D.A. Jewell
+
+== Strategy
+
+Start from the strongest existing foundation -- Idris 2 covers levels 1-7
+natively via its core type system (Quantitative Type Theory). Push upward
+using elaborator reflection, compiler plugins, and library-level encodings.
+
+== Status
+
+[cols="1,1,3",options="header"]
+|===
+| Level | Status | Notes
+
+| 1 | ✓ | Native -- basic types
+| 2 | ✓ | Native -- ADTs, exhaustiveness checking
+| 3 | ✓ | Native -- parametric polymorphism, implicits
+| 4 | ✓ | Native -- interfaces (type classes), higher-kinded
+| 5 | ✓ | Native -- GADTs via indexed data types
+| 6 | ✓ | Native -- full dependent types, proofs-as-programs
+| 7 | ✓ | Native -- QTT linear types (multiplicities 0, 1, ω)
+| 8 | ~ | Encoding via dependent pairs. Exploring elaborator sugar.
+| 9 | ~ | Brady's session type encoding. Needs ergonomic syntax.
+| 10 | . | The wall. QTT ≠ cubical. Investigating options.
+|===
+
+== Architecture
+
+----
+Idris 2 (QTT core)
+  │
+  ├── Levels 1-7: native, nothing to do
+  │
+  ├── Level 8: Refinement.idr
+  │   └── Elaborator script generates (x : a ** p x) from {x : a | p x}
+  │
+  ├── Level 9: Session.idr
+  │   └── Indexed monad encoding of session types
+  │   └── Brady (2017) "Type-Driven Development with Idris" ch. 15
+  │
+  └── Level 10: ???
+      └── Cannot extend QTT to cubical without changing the core
+      └── Options: bridge to Agda, or accept ✗ for this route
+----
+
+== Key References
+
+- Brady (2021) "Idris 2: Quantitative Type Theory in Practice"
+- Brady (2017) "Type-Driven Development with Idris" -- session types chapter
+- Atkey (2018) "Syntax and Semantics of Quantitative Type Theory"
+- Allais et al. "Idris 2 Elaborator Reflection"
