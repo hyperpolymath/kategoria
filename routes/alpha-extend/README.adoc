@@ -14,14 +14,14 @@ using elaborator reflection, compiler plugins, and library-level encodings.
 |===
 | Level | Status | Notes
 
-| 1 | ✓ | Native -- basic types
-| 2 | ✓ | Native -- ADTs, exhaustiveness checking
-| 3 | ✓ | Native -- parametric polymorphism, implicits
-| 4 | ✓ | Native -- interfaces (type classes), higher-kinded
-| 5 | ✓ | Native -- GADTs via indexed data types
-| 6 | ✓ | Native -- full dependent types, proofs-as-programs
-| 7 | ✓ | Native -- QTT linear types (multiplicities 0, 1, ω)
-| 8 | ~ | Encoding via dependent pairs. Exploring elaborator sugar.
+| 1 | ✓ | Native -- basic types (Level01_BasicTypes.idr)
+| 2 | ✓ | Native -- ADTs, exhaustiveness checking (Level02_ADTs.idr)
+| 3 | ✓ | Native -- parametric polymorphism, implicits (Level03_Polymorphism.idr)
+| 4 | ✓ | Native -- interfaces (type classes), higher-kinded (Level04_TypeClasses.idr)
+| 5 | ✓ | Native -- GADTs via indexed data types (Level05_GADTs.idr)
+| 6 | ✓ | Native -- full dependent types, proofs-as-programs (Level06_DependentTypes.idr)
+| 7 | ✓ | Native -- QTT linear types (multiplicities 0, 1, ω) (Level07_LinearTypes.idr)
+| 8 | ✓ | Encoding via dependent pairs (x ** p x) (Level08_Refinement.idr)
 | 9 | ~ | Brady's session type encoding. Needs ergonomic syntax.
 | 10 | . | The wall. QTT ≠ cubical. Investigating options.
 |===
