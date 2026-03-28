@@ -10,7 +10,7 @@ caveat. Link out to the technology's own docs rather than over-explaining.
 Reference arXiv papers only where the approach is novel. Keep it brief — prove
 the claim, don't write a textbook.
 
-== "[Claim from README]"
+== [Claim from README]
 
 [quote, README]
 ____
