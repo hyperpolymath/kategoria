@@ -1,0 +1,111 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= The QTT–Cubical Incompatibility
+:author: Jonathan D.A. Jewell
+:date: 2026-03-29
+
+== The Problem
+
+Quantitative Type Theory (QTT, Atkey 2018) and Cubical Type Theory
+(CCHM, Cohen et al. 2018) are both extensions of Martin-Löf Type
+Theory, but they extend it in _incompatible_ directions.
+
+== QTT: Tracking Resource Usage
+
+QTT extends MLTT with _multiplicities_ on variable bindings:
+
+----
+Γ, x :_π A ⊢ M : B
+----
+
+Where `π ∈ {0, 1, ω}` says how many times `x` is used:
+- `0` = erased (compile-time only)
+- `1` = linear (used exactly once)
+- `ω` = unrestricted (used any number of times)
+
+QTT's equality is _propositional_: `a = b` is a type (a proposition)
+that must be inhabited by a proof term. Two things are equal when
+you construct a proof.
+
+== Cubical: Tracking Paths Between Types
+
+Cubical type theory extends MLTT with an _interval type_ `I`:
+
+----
+I : ISet   (not a type — a special sort)
+0 : I
+1 : I
+----
+
+A _path_ from `a` to `b` in type `A` is a function `p : I → A`
+with `p(0) = a` and `p(1) = b`. This replaces propositional equality.
+
+The key operations are:
+
+- **transport** `(p : A ≡ B) → A → B` — coerce values along paths
+- **ua** `(e : A ≃ B) → A ≡ B` — univalence: equivalence yields paths
+- **Kan operations** — composition and filling of cubes
+
+== Why They Don't Compose
+
+[cols="1,3"]
+|===
+| Conflict | Explanation
+
+| Interval sort
+| `I` is not a type in QTT's universe hierarchy. QTT has `Type : Type₁ : Type₂ : ...` but no `ISet`. Adding `I` requires a new sort, which changes the core judgement forms.
+
+| Multiplicity on paths
+| If `p : I → A`, what is the multiplicity of the interval variable? It's used "continuously" — not 0, 1, or ω times. QTT's discrete usage counting doesn't model continuous deformation.
+
+| Transport vs. linearity
+| `transport p : A → B` creates a value of type `B` from a value of type `A`. If the value of type `A` is linear (multiplicity 1), does transport consume it? The interaction is undefined.
+
+| Kan composition
+| Kan composition fills n-dimensional cubes. The composition operations create new proof terms that don't correspond to any source-level variable usage pattern in QTT.
+
+| Equality
+| QTT uses propositional equality (`=` as a type). Cubical uses path equality (`≡` as `I → A`). These are different judgement forms with different computation rules.
+|===
+
+== Research Towards Unification
+
+=== Nuyts & Devriese (2023) — Degrees of Relatedness
+
+Proposes _parametric quantifiers_ that generalize both multiplicities
+and path abstractions. A variable can be "used parametrically" (like
+QTT's 0-multiplicity, but with richer structure). This is the most
+promising direction.
+
+=== Gratzer, Kavvos, Nuyts, Birkedal (2024) — Multimodal Dependent Type Theory
+
+Uses _modalities_ (modal type operators) to mediate between different
+type-theoretic fragments. Each fragment (linear, cubical, etc.) lives
+in its own mode, with _modal transformations_ between them.
+
+=== The Kategoria Angle
+
+Route ε (Clean Slate) should investigate whether a calculus can:
+
+1. Have QTT-style multiplicities for resource tracking
+2. Have cubical-style paths for type equality
+3. Use modalities to separate the two concerns
+4. Ensure the interaction is sound (no `believe_me` needed)
+
+This is an open problem as of March 2026.
+
+== Implications for Kategoria
+
+- **Route α** (extend Idris 2): ✗ L10 impossible — QTT core
+- **Route β** (dyadic split): Possible — run cubical as second core
+- **Route γ** (aspect injection): Possible — cubical as aspect
+- **Route δ** (aggregate bridge): Possible — bridge to Agda --cubical
+- **Route ε** (clean slate): The real goal — unify in one calculus
+
+== References
+
+- Atkey (2018) "Syntax and Semantics of Quantitative Type Theory"
+- Cohen, Coquand, Huber, Mörtberg (2018) "Cubical Type Theory"
+- Voevodsky (2010) "Univalent Foundations"
+- Nuyts & Devriese (2023) "Degrees of Relatedness"
+- Gratzer et al. (2024) "Multimodal Dependent Type Theory"
+- Licata, Shulman (2016) "Adjoint Logic with a 2-Category of Modes"

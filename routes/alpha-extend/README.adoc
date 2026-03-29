@@ -22,8 +22,8 @@ using elaborator reflection, compiler plugins, and library-level encodings.
 | 6 | ✓ | Native -- full dependent types, proofs-as-programs (Level06_DependentTypes.idr)
 | 7 | ✓ | Native -- QTT linear types (multiplicities 0, 1, ω) (Level07_LinearTypes.idr)
 | 8 | ✓ | Encoding via dependent pairs (x ** p x) (Level08_Refinement.idr)
-| 9 | ~ | Brady's session type encoding. Needs ergonomic syntax.
-| 10 | . | The wall. QTT ≠ cubical. Investigating options.
+| 9 | ✓ | Brady's indexed monad encoding. Protocol duality proven involutive. See `Level09_SessionTypes.idr`.
+| 10 | ✗ | The wall. QTT ≠ cubical — proven architectural incompatibility. See `Level10_CubicalTypes.idr`.
 |===
 
 == Architecture
@@ -33,21 +33,65 @@ Idris 2 (QTT core)
   │
   ├── Levels 1-7: native, nothing to do
   │
-  ├── Level 8: Refinement.idr
+  ├── Level 8: Level08_Refinement.idr
   │   └── Elaborator script generates (x : a ** p x) from {x : a | p x}
   │
-  ├── Level 9: Session.idr
+  ├── Level 9: Level09_SessionTypes.idr                         ← ✓ DONE
   │   └── Indexed monad encoding of session types
-  │   └── Brady (2017) "Type-Driven Development with Idris" ch. 15
+  │   └── Protocol = Send a rest | Recv a rest | End
+  │   └── dual : Protocol -> Protocol (involution proven)
+  │   └── SessionM : Protocol -> Protocol -> Type -> Type
+  │   └── ACCEPT: client/server follow Arith protocol
+  │   └── REJECT: out-of-order send/recv is compile error
+  │   └── Brady (2017) ch. 15 + Honda (1993)
   │
-  └── Level 10: ???
-      └── Cannot extend QTT to cubical without changing the core
-      └── Options: bridge to Agda, or accept ✗ for this route
+  └── Level 10: Level10_CubicalTypes.idr                        ← ✗ WALL
+      └── QTT has no interval type I → no path types
+      └── Without paths: no transport, no ua, no univalence
+      └── Best effort: Equiv record, BoolAutoEquiv bijection
+      └── Cannot state (Equiv Bool Bool) ≃ Bool without funext + ua
+      └── Routes β, δ, ε are the correct paths to L10
 ----
+
+== L9 Session Types: Design Decisions
+
+The session type encoding leverages three existing levels:
+
+- *L2 (ADTs):* Protocol is an algebraic data type — exhaustive matching
+- *L6 (Dependent types):* SessionM is an indexed monad — state transitions in the type
+- *L7 (Linear types):* QTT multiplicities prevent channel duplication/discard
+
+This validates the Kategoria thesis: higher levels BUILD ON lower ones.
+L9 is not an isolated feature — it is L2 + L6 + L7 composed.
+
+== L10 Cubical Types: Why the Wall
+
+QTT and cubical type theory differ at the core calculus level:
+
+[cols="1,1,1",options="header"]
+|===
+| Feature | QTT (Idris 2) | Cubical (Agda --cubical)
+| Equality | Propositional (=) | Path types (I → A)
+| Interval | None | Primitive type I
+| Transport | Manual proofs | Primitive operation
+| Univalence | Cannot state | Axiom that computes
+| Funext | Postulate (stuck) | Theorem (computes)
+| HITs | Cannot define | First-class
+|===
+
+This is an open research problem. Nuyts & Devriese (2023) and
+Gratzer et al. (2024) are working towards multimodal type theories
+that could unify linear and cubical features.
 
 == Key References
 
 - Brady (2021) "Idris 2: Quantitative Type Theory in Practice"
 - Brady (2017) "Type-Driven Development with Idris" -- session types chapter
+- Honda (1993) "Types for Dyadic Interaction"
+- Honda, Vasconcelos, Kubo (1998) "Language Primitives and Type Discipline for Structured Communication-Based Programming"
+- Toninho & Yoshida (2018) "Depending on Session-Typed Processes"
 - Atkey (2018) "Syntax and Semantics of Quantitative Type Theory"
 - Allais et al. "Idris 2 Elaborator Reflection"
+- Cohen, Coquand, Huber, Mörtberg (2018) "Cubical Type Theory"
+- Nuyts & Devriese (2023) "Degrees of Relatedness"
+- Gratzer, Kavvos, Nuyts, Birkedal (2024) "Multimodal Dependent Type Theory"

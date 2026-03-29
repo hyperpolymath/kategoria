@@ -1,0 +1,88 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Cross-Pollination #001: L9/L10 Implications for All Routes
+:author: Jonathan D.A. Jewell
+:date: 2026-03-29
+:source-route: α (Alpha)
+:target-routes: β, γ, δ, ε
+
+== Findings from Route α
+
+Route α completed L9 and hit the wall at L10. Two discoveries
+cross-pollinate to other routes.
+
+== Discovery 1: Session Types Are Composition (L9)
+
+Session types require no new language features. They compose from:
+- ADTs (L2) for protocol description
+- Dependent types (L6) for indexed monad state tracking
+- Linear types (L7) for channel linearity
+
+*Implication for other routes:*
+
+[cols="1,3"]
+|===
+| Route | Action
+
+| β (Dyadic)
+| Both cores (QTT and cubical) can support L9. No need to split
+session types across cores.
+
+| γ (Aspect)
+| Session types should be an ASPECT layered on the stable core,
+not built into the core itself. The aspect needs only ADTs +
+dependent types + linearity from the core.
+
+| δ (Aggregate)
+| For the aggregate bridge, session types should come from the
+Idris 2 fragment (L1-7), not from the L8+ fragments.
+
+| ε (Clean Slate)
+| The core calculus needs ADTs + dependent types + linear types
+as primitives. Session types then emerge for free.
+|===
+
+== Discovery 2: The QTT–Cubical Wall (L10)
+
+QTT cannot express cubical type theory. The interval type `I` has
+no multiplicity analogue. Transport and Kan operations don't fit
+QTT's variable usage model.
+
+*Implication for other routes:*
+
+[cols="1,3"]
+|===
+| Route | Action
+
+| β (Dyadic)
+| The cubical core (β-2) should be a SEPARATE type checker, not
+an extension of the QTT core (β-1). They share syntax but have
+independent checking. Bridge via ABI at the term level.
+
+| γ (Aspect)
+| Cubical types as an aspect is RISKY. Aspects overlay a stable
+core, but cubical requires changing the EQUALITY JUDGEMENT.
+An aspect cannot change how `=` works. Consider making cubical
+a core variant rather than an aspect.
+
+| δ (Aggregate)
+| Agda --cubical is the natural L10 target. The bridge should
+pass TERMS between Idris 2 (L1-9) and Agda (L10), translating
+propositional equality to path equality at the boundary.
+
+| ε (Clean Slate)
+| Study Nuyts & Devriese (2023) "Degrees of Relatedness" and
+Gratzer et al. (2024) "Multimodal Dependent Type Theory".
+These are the closest published work to unifying linear +
+cubical in one calculus.
+|===
+
+== Priority Recommendation
+
+Given that L10 is the hardest level and the one most likely to
+determine whether Kategoria achieves its full vision:
+
+1. **Route δ first** — bridging to Agda gives us a working L10
+   soonest, even if inelegant
+2. **Route ε research** — read the multimodal papers, sketch a
+   core calculus, don't rush to implementation
+3. **Route β as fallback** — if ε stalls, dyadic split is viable

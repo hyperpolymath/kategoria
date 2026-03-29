@@ -1,0 +1,39 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Shine #001: Session Types Are Pure Composition
+:author: Jonathan D.A. Jewell
+:date: 2026-03-29
+:route: α (Alpha)
+:level: 9
+
+== The Discovery
+
+Level 9 (session types) required ZERO new language features.
+
+The entire encoding uses:
+- L2: Protocol as an ADT with exhaustive matching
+- L6: SessionM as an indexed monad (dependent types)
+- L7: QTT multiplicities preventing channel duplication
+
+This was expected in theory (Brady 2017 demonstrated it) but seeing
+it implemented as a Kategoria level made the _compositionality_ of
+the type safety hierarchy concrete.
+
+== Why This Matters
+
+The 10 levels of type safety are not 10 independent features. They
+form a _lattice_ where higher levels compose lower ones:
+
+----
+L9 = L2 + L6 + L7      (session types = ADTs + dependent + linear)
+L8 = L6 + solver        (refinement = dependent + SMT/decision)
+L7 = L6 + multiplicity  (linear = dependent + usage tracking)
+----
+
+This suggests that Route ε (clean slate) needs a SMALL core with
+strong composition, not a LARGE core with 10 separate features.
+
+== Cross-Pollination
+
+This discovery should inform:
+- Route γ (aspects): session types as an ASPECT, not core feature
+- Route ε (clean slate): minimal core that composes to all 10 levels

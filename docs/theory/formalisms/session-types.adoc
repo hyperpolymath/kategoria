@@ -1,0 +1,82 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Session Types: Theory and Encoding in QTT
+:author: Jonathan D.A. Jewell
+:date: 2026-03-29
+
+== Origin
+
+Session types were introduced by Honda (1993) to type communication
+channels in process calculi. The key idea: a _protocol_ is a _type_
+that describes the sequence of messages on a channel.
+
+== Core Concepts
+
+=== Binary Session Types
+
+A binary session type describes communication between two parties.
+Each party sees the _dual_ of the other's protocol:
+
+----
+S ::= !T.S    (send value of type T, continue with S)
+    | ?T.S    (receive value of type T, continue with S)
+    | end     (session complete)
+----
+
+Duality swaps send/receive: `dual(!T.S) = ?T.dual(S)`.
+
+=== The Indexed Monad Encoding
+
+Brady (2017) showed that session types can be encoded in a
+dependently-typed language using an _indexed monad_:
+
+----
+SessionM : Protocol -> Protocol -> Type -> Type
+----
+
+Where:
+- First `Protocol` = state BEFORE the operation
+- Second `Protocol` = state AFTER the operation
+- `Type` = result value
+
+The bind operation chains states: if `m : SessionM p1 p2 a` and
+`f : a -> SessionM p2 p3 b`, then `m >>= f : SessionM p1 p3 b`.
+
+This is a _graded monad_ where the grade is the protocol transition.
+
+=== Why It Works in QTT
+
+QTT (Quantitative Type Theory) adds _multiplicities_ to the
+indexed monad encoding:
+
+1. **Dependent types (L6)** give us the indexed monad — the protocol
+   state is tracked in the type.
+2. **Linear types (L7)** prevent channel aliasing — a channel with
+   multiplicity 1 cannot be duplicated or forgotten.
+3. Together, this enforces the _session fidelity_ property: the
+   runtime communication MUST follow the protocol type.
+
+=== Relation to Process Calculi
+
+Session types connect to:
+
+- **π-calculus**: Session types type channels in the π-calculus
+- **Linear logic**: Session types correspond to propositions in
+  intuitionistic linear logic (Caires & Pfenning, 2010)
+- **Choreographies**: Multi-party session types (Honda, Yoshida,
+  Carbone 2016) describe global interaction patterns
+
+== Limitations of the QTT Encoding
+
+1. **No built-in syntax** — requires do-notation or elaborator sugar
+2. **No dependent session types** — protocol cannot depend on received
+   values without additional encoding (Toninho & Yoshida, 2018)
+3. **No multi-party** — binary only; MPST requires projection
+
+== Key References
+
+- Honda (1993) "Types for Dyadic Interaction"
+- Gay & Hole (1999) "Types and Subtypes for Client-Server Interaction"
+- Caires & Pfenning (2010) "Session Types as Intuitionistic Linear Propositions"
+- Brady (2017) "Type-Driven Development with Idris" Ch. 15
+- Toninho & Yoshida (2018) "Depending on Session-Typed Processes"
+- Honda, Yoshida, Carbone (2016) "Multiparty Asynchronous Session Types"

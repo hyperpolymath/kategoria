@@ -1,0 +1,55 @@
+// SPDX-License-Identifier: PMPL-1.0-or-later
+= Stumble #001: The QTT–Cubical Wall
+:author: Jonathan D.A. Jewell
+:date: 2026-03-29
+:route: α (Alpha)
+:level: 10
+
+== The Wall
+
+Route α (extend Idris 2) hit a hard wall at Level 10. This was
+predicted in ADR-001 but now confirmed with specifics.
+
+== What We Tried
+
+1. **Setoid encoding**: Define `Equiv a b` as a record with round-trip
+   proofs. Works for stating equivalences, but cannot achieve
+   univalence — `Equiv a b` is not convertible to `a = b` in QTT.
+
+2. **Postulated univalence**: Could add `postulate ua : Equiv a b -> a = b`
+   but postulates don't compute. `transport (ua e) x` is STUCK —
+   it never reduces. This defeats the purpose of cubical types.
+
+3. **BoolAutoEquiv bijection**: Can enumerate Bool self-equivalences
+   and biject them with Bool, but cannot prove this exhausts all
+   equivalences without function extensionality.
+
+== Root Cause
+
+QTT and cubical type theory extend MLTT in incompatible directions:
+- QTT adds multiplicities (0, 1, ω) on variables
+- Cubical adds an interval type I and path types (I → A)
+- The interval variable is used "continuously" — not 0, 1, or ω times
+- Transport and Kan composition have no QTT usage analogue
+
+This is a fundamental issue, not an implementation gap.
+
+== What We Learned
+
+1. **The compositionality stops at L10.** L1-L9 compose beautifully
+   within QTT. L10 requires a different core.
+
+2. **Best-effort encodings are intellectually dishonest.** We COULD
+   claim partial credit with the setoid encoding, but it would be
+   misleading. L10 requires univalence that _computes_.
+
+3. **Route α's value is proving the boundary.** Knowing exactly
+   WHERE and WHY the wall exists is research output.
+
+== Implications
+
+- Route β should seriously pursue the dyadic split (QTT + cubical
+  as two communicating cores)
+- Route δ should investigate Agda --cubical as the L10 bridge target
+- Route ε should study Nuyts & Devriese (2023) and Gratzer et al.
+  (2024) for multimodal approaches

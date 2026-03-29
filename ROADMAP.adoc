@@ -1,22 +1,60 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-= YOUR Template Repo Roadmap
+= Kategoria Roadmap
+:author: Jonathan D.A. Jewell
 
-== Current Status
+== Current Status (2026-03-29)
 
-Initial development phase.
+Route α (Extend Idris 2) is the most advanced route.
+
+=== Route α Progress
+
+[cols="1,1,1,2",options="header"]
+|===
+| Level | Name | Status | File
+
+| 1 | Basic Types | ✓ | `Level01_BasicTypes.idr`
+| 2 | ADTs | ✓ | `Level02_ADTs.idr`
+| 3 | Parametric Polymorphism | ✓ | Native (Idris 2)
+| 4 | Higher-Kinded Types | ✓ | Native (Idris 2)
+| 5 | GADTs | ✓ | Native (Idris 2)
+| 6 | Dependent Types | ✓ | `Level06_DependentTypes.idr`
+| 7 | Linear Types | ✓ | Native (QTT)
+| 8 | Refinement Types | ~ | Elaborator sugar in progress
+| 9 | Session Types | ✓ | `Level09_SessionTypes.idr`
+| 10 | Cubical/Homotopy | ✗ | `Level10_CubicalTypes.idr` (wall documented)
+|===
+
+*Route α score: 9/10 (8 native + 1 encoding, 1 impossible)*
+
+=== Other Routes
+
+- **Route β (Dyadic)**: Not started. Next priority for L10.
+- **Route γ (Aspect)**: Not started. L10 as aspect is risky (see cross-pollination #001).
+- **Route δ (Aggregate)**: Not started. Bridge to Agda --cubical is fastest path to L10.
+- **Route ε (Clean Slate)**: Research phase. Reading Nuyts & Devriese (2023), Gratzer et al. (2024).
 
 == Milestones
 
-=== v0.1.0 - Foundation
-* [ ] Core functionality
-* [ ] Basic documentation
-* [ ] CI/CD pipeline
+=== v0.1.0 — Route α Complete
+* [x] L1-L7: Native Idris 2 coverage verified
+* [x] L9: Session types via indexed monad encoding
+* [x] L10: Wall documented with best-effort encoding
+* [ ] L8: Refinement types via elaborator sugar
+* [ ] Shared test suite: all challenge programs automated
 
-=== v1.0.0 - Stable Release
-* [ ] Full feature set
-* [ ] Comprehensive tests
-* [ ] Production ready
+=== v0.2.0 — Second Route Begins
+* [ ] Route δ: Bridge to Agda --cubical for L10
+* [ ] OR Route β: Dual core prototype
+* [ ] Shared test suite passing on two routes
+
+=== v1.0.0 — All 10 Levels
+* [ ] At least one route achieves ✓ on all 10 levels
+* [ ] Theory paper written
+* [ ] arXiv submission
 
 == Future Directions
 
-_To be determined based on community feedback._
+- Multi-party session types (MPST) for L9
+- Dependent session types (Toninho & Yoshida 2018)
+- Route ε: investigate multimodal dependent type theory
+- Integration with 007 agent meta-language type system
