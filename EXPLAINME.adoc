@@ -1,49 +1,238 @@
 // SPDX-License-Identifier: PMPL-1.0-or-later
-= {project-name} — Show Me The Receipts
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= Kategoria: The Type Safety Challenge — Show Me The Receipts
 :toc:
 :icons: font
 
-The README makes claims. This file backs them up.
+Named after Aristotle's _Κατηγορίαι_ (Categories, ~350 BCE). Five independent
+routes attempt to build a language covering all 10 known levels of type safety.
+No single production language covers all 10 today. This file maps what exists
+on disk to the claims in the README.
 
-For each headline feature: what makes it work, where the code is, and an honest
-caveat. Link out to the technology's own docs rather than over-explaining.
-Reference arXiv papers only where the approach is novel. Keep it brief — prove
-the claim, don't write a textbook.
-
-== [Claim from README]
+== Claim: Five routes, one shared test suite, directly comparable progress
 
 [quote, README]
 ____
-Paste the specific claim here.
+Each route shares a common test suite (10 challenge programs, one per level)
+and interface type specification, so progress is directly comparable.
+We do not know which approach will work. So we try five, share what we learn
+between them, and document everything — including the failures.
 ____
 
-Brief explanation of _how_ — 2-4 sentences. Link to the technology
-(https://elixir-lang.org[Elixir], https://ziglang.org[Zig], etc.) rather than
-explaining it from scratch.
+The shared test suite lives in `shared/test-suite/CHALLENGES.adoc` and defines
+one canonical challenge program per level (L1 through L10). All five routes
+must satisfy the same challenge specification. Each route has its own directory
+under `routes/` — `alpha-extend/`, `beta-dyadic/`, `gamma-aspect/`,
+`delta-aggregate/`, `epsilon-clean/` — and each contains ten level implementation
+files (`Level01_BasicTypes.idr` through `Level10_CubicalTypes.idr` for the
+Idris2-based routes). Route α (`alpha-extend/`) is the furthest along: it
+provides concrete Idris2 implementations for all ten levels, including the
+canonical `Level06_DependentTypes.idr` which demonstrates length-indexed
+`Vect` where `head Nil` is a compile-time type error, not a runtime exception.
+The progress matrix in the README (50 cells: 5 routes × 10 levels) is
+initialised to `.` (not started); updates flow in as implementations pass the
+shared challenge specification.
 
-**Caveat:** What doesn't this cover? Where are the limits?
+**Caveat:** All five routes are at early implementation stage. The progress
+matrix is intentionally honest — every cell showing `.` is accurate. Route α
+has skeletal files for all ten levels, but passing all 10 challenge programs
+is still in progress. Routes β through ε have directory structure and design
+documents but substantially less implemented code.
 
-- Implementation: `path/to/code`
-- Learn more: https://relevant-docs.example.com
+- Shared challenges: `shared/test-suite/CHALLENGES.adoc`
+- Route α (Idris2 extend): `routes/alpha-extend/Level*.idr`
+- Route β (dyadic split): `routes/beta-dyadic/`
+- Route γ (aspect injection): `routes/gamma-aspect/`
+- Route δ (aggregate bridge): `routes/delta-aggregate/`
+- Route ε (clean slate): `routes/epsilon-clean/`
+
+== Claim: The 10 levels are distinct and independently motivated
+
+[quote, README]
+____
+No single production language covers all 10 today. Most cover 3-4. The best
+(Idris 2) covers 7. That gap is the challenge. Every time Rust prevents a
+use-after-free, or Haskell forces you to handle a missing value, or Idris proves
+your parser terminates — type theory is doing the work.
+____
+
+The level definitions in the README are grounded in the type theory literature.
+Level 6 (Dependent Types) is demonstrated in
+`routes/alpha-extend/Level06_DependentTypes.idr`: a `Vect n a` type carries
+its length in the type, so `head : Vect (S n) a -> a` cannot accept `Vect 0 a`
+— the compiler produces a proof obligation `0 ≠ S ?n` that it immediately
+rejects. This is not a runtime bounds check but a compile-time impossibility.
+Level 7 (Linear/Affine Types) maps directly to Idris2's QTT (Quantitative Type
+Theory) and Rust's ownership model. Levels 8–10 (Refinement, Session, Cubical)
+are the hard cases: no single language handles all three, which is exactly what
+motivates the five-route structure. The `src/` directory contains the core
+language definitions; `shared/interface-types/` holds the cross-route type
+interface specification.
+
+**Caveat:** The claim "no single production language covers all 10" is accurate
+as of March 2026 per the README's own date-stamped caveat. This is an evolving
+area — the README explicitly invites correction and has a "Level 11 and Beyond"
+section tracking candidates (graded types, effect types, modal types, etc.).
+
+- Level 6 demo: `routes/alpha-extend/Level06_DependentTypes.idr`
+- Core definitions: `src/core/`, `src/definitions/`
+- Interface types: `shared/interface-types/`
 
 == Dogfooded Across The Account
-
-These aren't one-off choices — they're patterns used across hyperpolymath repos:
 
 [cols="1,2"]
 |===
 | Technology | Also Used In
 
-| **[Tech 1]** | https://github.com/hyperpolymath/[repo1], https://github.com/hyperpolymath/[repo2]
-| **[Tech 2]** | https://github.com/hyperpolymath/[repo3]
+| **Idris2 (routes α, β, γ)** | https://github.com/hyperpolymath/ochrance-framework[ochrance-framework]
+  and https://github.com/hyperpolymath/ochrance[ochrance] (verified subsystem integrity),
+  https://github.com/hyperpolymath/stapeln[stapeln] (crypto proofs),
+  https://github.com/hyperpolymath/ephapax[ephapax] (linear types — 27 Qed)
+| **Productive Meandering methodology** | The constraint-first exploratory
+  methodology documented in `docs/methodology/` is used across
+  https://github.com/hyperpolymath/methodologies[methodologies] and applied
+  to 007, Ephapax, and other exploratory language projects
+| **Stumble journal / shine journal pattern** | Cross-pollination documentation
+  format in `docs/stumble-journal/` and `docs/shine-journal/` mirrors the
+  session journal pattern used in the 007 language development
+| **Multi-route comparative design** | Pattern also used in
+  https://github.com/hyperpolymath/nextgen-languages[nextgen-languages] where
+  multiple language implementations co-exist in one monorepo
 |===
 
 == File Map
 
-[cols="1,2"]
+[cols="1,3"]
 |===
-| Path | Proves
+| Path | What's There
 
-| `src/` | ...
-| `ffi/` | ...
+| `routes/alpha-extend/`
+| Route α: Extend Idris2. Ten `Level*.idr` files implementing each challenge
+  in native Idris2. L1-L7 use Idris2 directly; L8 uses elaborator-generated
+  dependent pairs; L9 uses Brady's session type encoding; L10 is the known
+  wall (QTT vs cubical foundations).
+
+| `routes/beta-dyadic/`
+| Route β: Dyadic split — β-1 (QTT workhorse) + β-2 (cubical prover) sharing
+  parser and ABI. Inspired by Ephapax's region-linear fusion approach.
+
+| `routes/gamma-aspect/`
+| Route γ: Aspect injection. Stable dependent-type core with independent
+  checkers woven in at compile-time: SMT refinement (L8), protocol verifier
+  (L9), cubical checker (L10).
+
+| `routes/delta-aggregate/`
+| Route δ: Aggregate bridge. Idris2 (L1-7) + F*/Liquid Haskell (L8) +
+  Scribble (L9) + Agda --cubical (L10) connected through shared ABI/FFI.
+
+| `routes/epsilon-clean/`
+| Route ε: Clean slate. New core calculus drawing on Nuyts/Gratzer/Sterling
+  work on combining linearity with cubical types. Highest risk.
+
+| `shared/test-suite/CHALLENGES.adoc`
+| Canonical challenge specification. One challenge program per level, language-
+  agnostic, directly comparable across all routes.
+
+| `shared/interface-types/`
+| Cross-route interface type specification. Defines the common API that all
+  routes must implement for the challenge programs.
+
+| `src/core/`
+| Core language definitions shared across routes (base syntax, AST types).
+
+| `src/definitions/`
+| Shared type definitions referenced by multiple routes.
+
+| `src/aspects/`
+| Aspect definitions for Route γ (aspect injection pattern).
+
+| `src/bridges/`
+| Bridge type definitions for Route δ (aggregate bridge ABI).
+
+| `src/contracts/`
+| Interface contracts and type-checking predicates.
+
+| `src/errors/`
+| Shared error type hierarchy.
+
+| `src/interface/`
+| Common interface types for cross-route communication.
+
+| `progress/`
+| Per-route progress tracking. `0.1-AI-MANIFEST.a2ml` with current level
+  completion status.
+
+| `docs/design-decisions/`
+| ADR-style records for every fork-in-the-road architectural choice.
+
+| `docs/stumble-journal/`
+| What went wrong, why, and what was learned. Explicitly the most useful
+  documentation in the project.
+
+| `docs/shine-journal/`
+| What worked unexpectedly well.
+
+| `docs/cross-pollination/`
+| Discoveries from one route that helped another.
+
+| `docs/methodology/`
+| Field reports on constraint-first development and LLM collaboration.
+
+| `docs/attribution/`
+| Research attribution: Russell, Church, Curry, Howard, Martin-Löf, Girard,
+  Wadler, Brady, Voevodsky, and the academic lineage behind each level.
+
+| `features/`
+| Feature flag definitions for progressive language capability enabling.
+
+| `verification/`
+| Formal verification artefacts and proof scripts.
+
+| `examples/`
+| Language usage examples across routes.
+
+| `tests/`
+| Test runner infrastructure that evaluates routes against `shared/test-suite/`.
+
+| `Justfile`
+| Build and test recipes.
+
+| `ROADMAP.adoc`
+| Development roadmap with route milestone definitions.
+
+| `PROOF-NEEDS.md`
+| Tracker for theorems and properties that need formal proof.
+
+| `TEST-NEEDS.md`
+| Tracker for tests that need to be written.
+
+| `.machine_readable/6a2/`
+| A2ML checkpoint files (in `progress/0.1-AI-MANIFEST.a2ml` and root).
 |===
+
+== Checking It
+
+[source,bash]
+----
+# Type-check Route α (Idris2)
+idris2 --check routes/alpha-extend/Level06_DependentTypes.idr
+
+# Run shared test suite against Route α
+just test-alpha
+
+# Run all routes
+just test-all
+
+# Check progress matrix
+just progress
+----
+
+== Honest Status
+
+All five routes are at scaffolding-to-early-implementation stage. Route α has
+the most concrete code: Idris2 implementations for all ten levels that
+demonstrate the type-theory claims. Routes β–ε have architecture designs and
+empty implementation files. The value of the project at this stage is the
+level taxonomy, the five-route comparative design, and the shared test
+specification — these are complete. The progress matrix will fill in over
+the coming sessions.
