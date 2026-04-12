@@ -118,19 +118,20 @@ export
 send : (val : a) -> SessionM (Send a rest) rest ()
 send val = Pure ()
 
+-- Stub value produced by recv when no real transport is wired.
+-- The TYPE SAFETY guarantee is in the indexed monad type, not here.
+-- TODO(#L9-runtime): Remove this postulate and wire to real transport I/O.
+private
+postulate recvPlaceholder : a
+
 ||| Receive a value. The channel type transitions from
 ||| `Recv a rest` to `rest`.
 |||
 ||| The received value has type `a` — guaranteed by the protocol.
+||| NOTE: value is a named stub until a real transport is wired.
 export
 recv : SessionM (Recv a rest) rest a
-recv = Pure (believe_me "placeholder_recv")
--- NOTE: believe_me is used ONLY for the runtime placeholder value.
--- In a real implementation this reads from the underlying transport.
--- The TYPE SAFETY is enforced by the indexed monad, not by this value.
--- The protocol conformance proof is entirely in the types.
--- TODO(#L9-runtime): Replace with actual channel I/O when wiring
--- to a real transport layer.
+recv = Pure recvPlaceholder
 
 ||| Close a completed channel. Only callable when protocol is `End`.
 export
