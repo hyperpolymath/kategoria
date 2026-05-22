@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- Kategoria Route α — Level 4: Type Classes (Interfaces) & Higher-Kinded Types
 --
 -- ACCEPT: Custom types implement Show, Eq, Functor. Constrained generics work.

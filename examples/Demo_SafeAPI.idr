@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- Demo: Type-Safe REST API — Levels 3-6 in action
 --
 -- Shows how Kategoria levels combine to create an API where

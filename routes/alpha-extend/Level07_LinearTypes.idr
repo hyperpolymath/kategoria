@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- Kategoria Route α — Level 7: Linear Types (QTT)
 --
 -- ACCEPT: Resources used exactly once. File handles cannot leak.

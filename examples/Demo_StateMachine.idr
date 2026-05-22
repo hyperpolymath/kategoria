@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- Demo: Type-Safe State Machine — Levels 5-7 in action
 --
 -- A vending machine where the type system prevents invalid transitions.

@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- Demo: Proven Arithmetic — Level 6 proofs in practice
 --
 -- Every operation carries a proof of correctness.

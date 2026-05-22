@@ -1,4 +1,4 @@
--- SPDX-License-Identifier: PMPL-1.0-or-later
+-- SPDX-License-Identifier: MPL-2.0
 -- Kategoria Route α — Level 6: Dependent Types
 --
 -- ACCEPT: Length-indexed vector operations type-check.
