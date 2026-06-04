@@ -1,4 +1,5 @@
 -- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -- Kategoria Route α — Level 5: GADTs (Generalised Algebraic Data Types)
 --
 -- ACCEPT: Type-safe expression evaluator — ill-typed expressions cannot exist.

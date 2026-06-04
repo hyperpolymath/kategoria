@@ -1,4 +1,5 @@
 -- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -- Demo: Proven Arithmetic — Level 6 proofs in practice
 --
 -- Every operation carries a proof of correctness.

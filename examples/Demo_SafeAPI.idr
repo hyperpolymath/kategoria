@@ -1,4 +1,5 @@
 -- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -- Demo: Type-Safe REST API — Levels 3-6 in action
 --
 -- Shows how Kategoria levels combine to create an API where

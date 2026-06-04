@@ -1,4 +1,5 @@
 -- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -- Demo: Type-Safe State Machine — Levels 5-7 in action
 --
 -- A vending machine where the type system prevents invalid transitions.

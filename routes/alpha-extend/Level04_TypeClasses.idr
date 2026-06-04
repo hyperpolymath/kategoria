@@ -1,4 +1,5 @@
 -- SPDX-License-Identifier: MPL-2.0
+-- Copyright (c) Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
 -- Kategoria Route α — Level 4: Type Classes (Interfaces) & Higher-Kinded Types
 --
 -- ACCEPT: Custom types implement Show, Eq, Functor. Constrained generics work.
