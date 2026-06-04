@@ -3,7 +3,7 @@
 #
 # K9 Validator: Methodology Guard
 # Checks that agent work respects methodology constraints declared in
-# agent_instructions/methodology.a2ml.
+# bot_directives/methodology.a2ml.
 #
 # Usage: k9 validate methodology-guard
 
@@ -50,7 +50,7 @@ let methodology_guard = {
     coverage_updated = {
       description = "coverage.a2ml should be updated within 30 days",
       severity = "info",
-      file = ".machine_readable/agent_instructions/coverage.a2ml",
+      file = ".machine_readable/bot_directives/coverage.a2ml",
       staleness_days = 30,
     },
   },
