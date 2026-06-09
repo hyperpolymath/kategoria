@@ -335,6 +335,30 @@ If any of these crystallise into a distinct level during this project, we
 will extend the test suite and the progress matrix. The name _Kategoria_
 does not promise exactly 10 -- it promises we will classify whatever we find.
 
+TypeFix Zero / TF0 relation
+
+TypeFix Zero is a proposed standalone calibration calculus for Kategoria/Katagoria.
+
+Where Kategoria explores routes toward high-assurance type safety, TypeFix Zero intentionally does the opposite: it strips the design down to the smallest typed, Turing-complete core that remains mathematically honest.
+
+TF0 contains:
+
+universe/metaset stratification: Type i : Type (i + 1)
+function types
+natural numbers
+lambda abstraction and application
+one explicit fixed-point primitive
+
+Its value to Kategoria is diagnostic. It provides a tiny object language for testing claims about:
+
+universe hierarchies
+ordinary mathematical types
+the boundary between total and partial computation
+whether a proposed type-safety level depends on termination
+how much machinery is truly necessary before a language becomes Turing complete
+
+TF0 should not be treated as a Kategoria implementation target. It is a baseline calculus used to compare, simplify, and falsify larger designs.
+
 == Acknowledgements
 
 This project builds on decades of work by people who will never see this
