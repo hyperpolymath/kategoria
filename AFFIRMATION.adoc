@@ -1,0 +1,311 @@
+// SPDX-License-Identifier: MPL-2.0
+// SPDX-FileCopyrightText: 2026 Jonathan D.A. Jewell <j.d.a.jewell@open.ac.uk>
+= AFFIRMATION — kategoria, as of 2026-06-16
+:toc: macro
+:toclevels: 2
+
+_the No-Bullshit file: what we affirm was true and checkable at this moment_
+
+[NOTE]
+====
+*Genre.* An *affirmation* is a solemn declaration of the truth of a statement,
+made by someone who _declines to swear an oath_. That is exactly what this is:
+our truth-as-best-believed at a stamped instant — binding on our honesty, not a
+claim of infallibility. It is not the README and not the EXPLAINME:
+
+[cols="1,3,2",options="header"]
+|===
+| File | Answers | Tense
+| `README`      | _Where is this going, and why?_ — the taxonomy, the five routes, the challenge | future / aspirational
+| `EXPLAINME`   | _How is it built, and what's the evidence?_ — maps claims to files on disk | descriptive / mechanism
+| *`AFFIRMATION`* (this file) | _What can we honestly affirm was *true and checkable* at a stamped moment?_ | a frozen instant, falsifiable
+|===
+
+kategoria is a *taxonomy and a challenge*, not a theorem factory: it classifies
+the ten known levels of type safety and tries to build a language covering all
+of them across five routes. It makes *no new-theorem claim* — it implements
+settled mathematics where the maths is settled, and documents the walls where it
+is not. This file affirms what *builds*, not what is novel.
+====
+
+toc::[]
+
+== What this is, and how it is designed to work
+
+*What it is.* A short, dated, jointly-signed snapshot of what we can _honestly
+and verifiably_ claim about this repo at one exact commit. Nothing here is
+marketing and nothing is a promise about the future — both of those live in the
+README. This file is the receipt.
+
+*How it is designed to work.* Three moving parts make it trustworthy:
+
+. *Ground truth, not memory.* Every claim below was produced by _running the
+  tool in the session that wrote this file_ — here, `idris2 --check` against the
+  actual route and example files. Status docs (ROADMAP, EXPLAINME, PROOF-NEEDS)
+  are NOT evidence; where they contradict the live run, *the live run wins and
+  we say so* (and they do contradict it — see <<state>>).
+. *A frozen anchor.* The file names the exact commit SHA, branch, UTC timestamp,
+  and toolchain (see <<anchor,Verifiable anchor>>), so "true" always means "true
+  _at this point_". Move the SHA and the file becomes a draft until re-run.
+. *A real signature.* It is landed by a *signed git commit*; that signature over
+  this content at the anchored SHA is what makes the affirmation tamper-evident
+  and attributable — not the prose alone.
+
+*We are fallible.* We can be wrong, stale, or simply mistaken about our own
+work. This file is our best honest belief, not a proof of its own correctness.
+Treat it as a falsifiable claim, not gospel.
+
+== The epistemic contract (read this before you trust _or_ attack)
+
+This document records our *best joint belief* at the timestamp below. It is
+*not a guarantee of correctness.* We may be wrong. We may have missed something
+— a file that type-checks for the wrong reason, a stale status table, an
+encoding we believe demonstrates a level but that a type theorist would reject.
+
+*No intentional overclaim.* That is the only guarantee here: we have not
+_knowingly_ inflated anything. Where a level *fails to type-check* we say so.
+Where a "✓" in a status doc is *refuted by the checker*, we say so. Where a
+level is an honestly-documented *wall* rather than a solved problem, we say so.
+If you find an honest claim here that turns out false, that is an error to be
+fixed — not a lie.
+
+*Standing invitation to refute.* You are _invited_ to bulldoze any claim in this
+file. We want that — and for a taxonomy/challenge repo, "tell us where we are
+wrong about the maths" is _the entire point_. But the fair form of the attack
+is:
+
+. Read this file at the stamped commit.
+. Reproduce (or fail to reproduce) the checks in <<reproduce,Reproduce it yourself>>.
+. _Then_ tell us where the discrepancy is, against the artefact as it stood at
+  this moment — so we can either justify it or concede it on the record.
+
+An attack that skips steps 1–2 is attacking a strawman of a different date.
+
+*No fights before the facts are cleared up.* We are not interested in a dispute
+over a claim until the discrepancy has actually been checked against the
+artefact at this commit and we have had the chance to either justify it or
+concede it on the record. Good faith both ways: bring a reproducible
+discrepancy and we will fix the claim, the doc, or the code — promptly and
+without defensiveness. The goal is a corrected record, not a won argument.
+
+[#anchor]
+== Verifiable anchor
+
+[cols="1,3"]
+|===
+| *Repo*        | `hyperpolymath/kategoria` (the Type Safety Challenge — a taxonomy + multi-route language-development project)
+| *Branch*      | `claude/safedom-res-stale-sweep`
+| *Commit (HEAD)* | `7ba58c54937d5695d92431e67efbe191e76a69b0`
+| *Permalink*   | https://github.com/hyperpolymath/kategoria/tree/7ba58c54937d5695d92431e67efbe191e76a69b0
+| *Verified (UTC)* | 2026-06-16T12:26:01Z
+| *Working-tree delta at verification* | *Clean* (`git status --porcelain` empty) before this file was written. The only delta this file introduces is its own untracked self; it changes no build/check result below.
+| *Toolchain*   | Idris2 0.8.0 · Agda 2.8.0 (installed, *not exercised* — no Agda sources in tree) · just 1.50.0 · `pack` *not installed* (not on `PATH`). Ground truth here is `idris2 --check` invoked directly; the `pack`/`.ipkg` proof-and-build path the file refers to below was *not available* to run at this commit, which is itself part of why nothing is "proved".
+|===
+
+[IMPORTANT]
+*Note on branch.* HEAD is on `claude/safedom-res-stale-sweep`, *not* `main`. If
+you reproduce on `main`, or at any later commit, the claims may have drifted —
+re-run <<reproduce>> and write a fresh affirmation; do not trust a stale one.
+
+== Companion documents and repo metadata (cross-check)
+
+This affirmation should be read against the repo's own public claims. Where they
+drift from what we verified, we say so here rather than quietly leave the reader
+to find out.
+
+* *`README.adoc`* — present. link:README.adoc[_"Kategoria: The Type Safety
+  Challenge"_]. Sells the ten-level taxonomy, the five routes (α–ε), and the
+  invitation to type theorists to correct the maths. This file is its receipt
+  for one moment.
+* *`EXPLAINME.adoc`* — present. link:EXPLAINME.adoc[_"Show Me The Receipts"_].
+  *Drifts from what we verified* in two concrete ways: (1) it points the reader
+  at `just test-alpha`, `just test-all`, and `just progress` as the way to check
+  routes — *none of those recipes exist* in the `Justfile` (it is the unmodified
+  RSR template whose `build`/`test` recipes are TODO `echo` stubs, see
+  <<state>>); (2) it describes "five routes ... each contains ten level
+  implementation files", but on disk *only Route α exists* under `routes/` —
+  routes β–ε have `src/` scaffolding and design prose, no `routes/` directories.
+  EXPLAINME's own "Honest Status" section does concede the β–ε emptiness; the
+  recipe names are the live drift.
+* *GitHub repo description* — _"The Type Safety Challenge — five PL development
+  approaches to building a language with every known level of type safety. Named
+  after Aristotle's Κατηγορίαι."_ Accurate to the project's intent and honest
+  about being a development effort (not a finished language).
+* *GitHub topics* — `development`, `hyperpolymath`, `just`, `open-source`,
+  `software`, `tooling`. *Drift:* these are generic estate-template tags — *none*
+  of them mention type theory, type safety, Idris2, Agda, dependent types, or any
+  level concept the README is entirely about. A reader searching GitHub for the
+  subject matter would not find this repo by topic.
+
+[#state]
+== The honest state (one breath)
+
+*kategoria is a genuinely useful ten-level type-safety taxonomy and a five-route
+challenge design, with exactly one route (α, Idris2 "extend") carrying real
+code; of that route's ten level files, six type-check clean under Idris2 0.8.0
+right now and four do not — which directly refutes the ROADMAP's "Route α score:
+9/10" and its "✓" marks on L1–L7 and L9. The build/test harness is unwired
+(stub Justfile), so nothing is "proved" in the proof-checker sense; what we have
+is six type-checking demonstrations and four broken ones, honestly counted.*
+
+=== What is solid (and how we checked)
+
+* *Six of Route α's ten level files type-check clean — verified this moment.*
+  Ran `idris2 --check routes/alpha-extend/Level0N_*.idr` for all ten files:
++
+[cols="1,1,4",options="header"]
+|===
+| Level | Result | Notes
+| L01 Basic Types        | ✓ exit 0 | clean
+| L02 ADTs               | ✓ exit 0 | clean
+| L03 Polymorphism       | ✗ exit 1 | ambiguous elaboration (`MkPair`, `length`)
+| L04 Type Classes (HKT) | ✓ exit 0 | clean
+| L05 GADTs              | ✓ exit 0 | clean
+| L06 Dependent Types    | ✓ exit 0 | clean — the canonical `Vect`/`head` demo
+| L07 Linear Types       | ✗ exit 1 | "Trying to use linear name in non-linear context"
+| L08 Refinement         | ✗ exit 1 | `Undefined name MkArray`; `Can't find LTE 85 100`
+| L09 Session Types      | ✗ exit 1 | parse error: `private` not a valid declaration start
+| L10 Cubical/Homotopy   | ✓ exit 0 | type-checks — but see the honest nuance below
+|===
+  *6 pass, 4 fail.*
+* *The Level 6 dependent-types demonstration is real and checks.*
+  `Level06_DependentTypes.idr` type-checks clean; it is the length-indexed `Vect`
+  case the README and EXPLAINME both lean on. This is a genuine, runnable
+  demonstration of the settled mathematics — exactly the kind of claim the repo
+  is entitled to make.
+* *The three `examples/` demos type-check clean — verified this moment.*
+  `idris2 --check examples/Demo_{ProvenArithmetic,SafeAPI,StateMachine}.idr` →
+  all exit 0.
+* *The taxonomy itself (the ten-level table + five-route design + shared
+  challenge spec) is present and self-consistent as prose* and is the project's
+  real present value, per its own EXPLAINME. We did *not* independently verify
+  its completeness or correctness as a taxonomy this session — that is a prose
+  artefact no tool here checks; we record only that nothing in this run
+  contradicts it.
+
+=== The honest nuance you must not lose (proved-core vs tested-impl)
+
+This is a taxonomy/challenge repo, so the gap takes a specific shape:
+
+* *Nothing here is "proved" in the proof-checker sense.* A file type-checking
+  under `idris2 --check` means *Idris2 accepted it as well-typed* — that is
+  "type-checks" / "tested", not a discharged theorem. There is no `.ipkg`/`pack`
+  build, no test runner, no proof obligation that a checker reports green. The
+  word *proved* is therefore not earned anywhere in this repo at this commit.
+* *L10 type-checks but is explicitly a documented wall, not a cubical proof.*
+  `Level10_CubicalTypes.idr` carries its own header `STATUS: ✗ IMPOSSIBLE on
+  this route (QTT core ≠ cubical core)` and spells out that univalence/funext
+  would need a non-computing `postulate` or `believe_me` in Idris2's QTT core.
+  It compiling is _consistent with_ the README's honest "L10 is the wall" stance;
+  do *not* read a green L10 as "cubical types achieved".
+* *L09 contains a `postulate recvPlaceholder`* (a deliberate stub the file
+  itself flags) — and the file *does not even type-check* at this commit anyway
+  (the `private`/`postulate` block is a parse error under Idris2 0.8.0).
+* *The "settled core" the repo demonstrates (L1–L6 type theory) is not the same
+  as "the kategoria language implements all ten levels".* Six type-checking
+  files are six demonstrations, not an implemented language and not a proof of
+  the challenge's central question.
+
+=== Known-incomplete but honestly fenced (loud failure, never silent)
+
+* *Four route-α levels fail loudly at `idris2 --check`* (L3, L7, L8, L9). These
+  are compile-time *rejections*, not silently-wrong artefacts: nothing emits bad
+  code, because nothing emits code at all (check-only).
+
+=== Outstanding / weak / refuted (no spin)
+
+* *ROADMAP.adoc is refuted by the live run.* It claims _"Route α score: 9/10"_
+  with ✓ on L1–L7 and L9. The checker says L3 ✗, L7 ✗, L8 ~/✗, L9 ✗ — so the
+  true type-check tally is *6/10*, and the specific cells L3/L7/L9 marked ✓ are
+  *false at this commit*. (L8 the ROADMAP itself marks `~`, which is generous —
+  it does not type-check.)
+* *EXPLAINME.adoc cites recipes that do not exist* (`just test-alpha`,
+  `test-all`, `progress`) and a `just test`/`build` that are TODO stubs. The
+  `Justfile` is the unmodified RSR template at this commit — there is no wired
+  build or test path for the routes.
+* *Routes β, γ, δ, ε have no code* — `src/` scaffolding and design prose only;
+  no `routes/{beta,gamma,delta,epsilon}-*` directories exist. The README progress
+  matrix (all `.`) is honest about this; the EXPLAINME's "ten level files per
+  route" framing is not.
+* *`verification/` is empty scaffolding* — every subdir (`proofs/`,
+  `safety_case/`, `tests/`, …) contains only a README and an A2ML manifest. No
+  verification artefacts exist despite the directory names.
+* *PROOF-NEEDS.md* is broadly consistent with the run (it flags the L9
+  `believe_me`/placeholder and L10 cubical gap) but predates these four
+  type-check failures and does not record that L3/L7/L8/L9 do not compile.
+
+== How the plan is working out (discoveries)
+
+* *What turned out "magical" (a believed-answer that dissolved on contact).*
+  The status docs (ROADMAP "9/10", EXPLAINME "ten level files ... all type-check")
+  read as if Route α were nearly complete. On contact with `idris2 --check`, four
+  of the ten files do not compile and the build harness that was supposed to
+  prove this (`just test-alpha`) does not exist. The "9/10" was a believed score,
+  not a checked one. That is the gap this whole AFFIRMATION format exists to catch.
+* *What a check made newly clear.* Running the checker turned a fuzzy "early
+  implementation" into a precise, defensible number — *6/10 files type-check,
+  named and reproducible* — which is a far more useful starting point for the
+  next session than any colour-coded matrix, and is the honest figure the README
+  matrix (all `.`) should graduate toward.
+
+[#reproduce]
+== Reproduce it yourself
+
+From the repo root, at the commit above, with Idris2 0.8.0 on `PATH`:
+
+[source,sh]
+----
+# Type-check all ten Route α level files (the real ground truth):
+for f in routes/alpha-extend/Level0*.idr routes/alpha-extend/Level10*.idr; do
+  echo "== $f =="; idris2 --check "$f"; echo "exit $?"
+done
+# Expect: L01,L02,L04,L05,L06,L10 -> exit 0 ; L03,L07,L08,L09 -> exit 1  (6 pass / 4 fail)
+
+# Type-check the three example demos:
+for f in examples/Demo_*.idr; do echo "== $f =="; idris2 --check "$f"; echo "exit $?"; done
+# Expect: all three exit 0
+
+# Note: `just test` / `just build` are RSR-template TODO stubs (echo only);
+# `just test-alpha` / `just test-all` / `just progress` referenced by EXPLAINME
+# DO NOT EXIST in the Justfile at this commit.
+----
+
+Expected summary output: *Route α 6/10 level files type-check (L1,L2,L4,L5,L6,L10
+pass; L3,L7,L8,L9 fail); all 3 example demos type-check; no proof-checker or test
+harness runs.*
+
+== One-line characterisation (quote this)
+
+[quote]
+____
+"A genuine ten-level type-safety *taxonomy* and a five-route *challenge* design,
+with one route (α, Idris2) carrying real code: 6 of its 10 level files
+type-check clean right now and 4 do not — refuting the ROADMAP's '9/10'. The
+build/test harness is an unwired template stub, so nothing is 'proved'; Level 6
+dependent types is a real, checking demonstration and Level 10 cubical is an
+honestly-documented wall. A useful map of the territory, not a finished language.
+No intentional overclaim."
+____
+
+== Joint attestation
+
+We, the undersigned, assert that *to the best of our joint belief at the
+timestamp above, every claim in this file is true and was checked as described*
+— with no intentional overclaim, and with the open gaps stated rather than
+hidden.
+
+* *Engineering party (AI):* Claude Opus 4.8 (`claude-opus-4-8[1m]`) — ran the
+  build/test/proof checks recorded here on 2026-06-16T12:26:01Z and stands
+  behind this wording as a faithful report of those runs.
+* *Owner / maintainer:* Jonathan D.A. Jewell — _signs by committing this file
+  with `-S` (`id_ed25519_signing`); the git commit signature over this content,
+  at the commit SHA recorded above, is the cryptographic form of this
+  affirmation._
++
+Signed-off-date: ____________________  (fill on signing)
+
+[TIP]
+The authoritative, tamper-evident signature is the *signed git commit* that
+lands this file. If the SHA in <<anchor,Verifiable anchor>> matches the parent
+of that commit and the commit verifies, this affirmation is anchored. If they
+don't match, treat the file as a draft.
