@@ -12,6 +12,18 @@ We welcome contributions in many forms:
 - **Testing:** Adding property-based tests or formal proofs
 - **Bug reports:** Filing clear, reproducible issues
 
+## Contribution model — Tri-Perimeter Contribution Framework (TPCF)
+
+kategoria follows the estate-wide **Tri-Perimeter Contribution Framework (TPCF)** — graduated trust without gatekeeping:
+
+- **Perimeter 1 — Core Systems (maintainers only).** The proof kernel: the level-indexed routes (`routes/`), the soundness/metatheory modules, and the build/CI tooling. Direct commits by maintainers only (see `MAINTAINERS.adoc`).
+- **Perimeter 2 — Expert Extensions (trusted contributors).** New proof routes, demos (`examples/`), and dependently-typed extensions. Apply via issue → review → merge, with every Idris module type-checking under `idris2 --check`.
+- **Perimeter 3 — Community Sandbox (open to all).** Docs (`.adoc`), `.well-known/` content, AI manifests, and spec proposals.
+
+### Fork workflow
+
+External contributors use the standard **fork**-and-pull-request workflow: fork the repository, branch from `main`, run `just quality` (and `idris2 --check` on any touched proof module) locally, then open a PR. Maintainers (Perimeter 1) may commit directly to feature branches. Proof modules must type-check before review — a red Idris check blocks merge.
+
 ## Getting Started
 
 1. **Read the AI Manifest:** Start with `0-AI-MANIFEST.a2ml` (if present) to understand the repository structure.

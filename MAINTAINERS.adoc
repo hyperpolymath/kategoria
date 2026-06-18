@@ -1,0 +1,27 @@
+<!-- SPDX-License-Identifier: MPL-2.0 -->
+= Maintainers
+
+This file lists the people responsible for kategoria and the review policy,
+for attribution and escalation.
+
+== Maintainers
+
+|===
+| Name | GitHub | Areas
+
+| Jonathan D.A. Jewell
+| @hyperpolymath
+| All — proof routes (`routes/`), demos (`examples/`), build tooling, governance
+|===
+
+Contact: `j.d.a.jewell@open.ac.uk` (see also `SECURITY.md` for vulnerability
+reporting and `CODE_OF_CONDUCT.md` for conduct reports).
+
+== Review policy
+
+* At least one maintainer review is required before merge to `main`.
+* Changes to the Idris proof routes (`routes/`) and the demos (`examples/`)
+  must type-check under Idris 2 (`idris2 --check`) before review — proofs are
+  load-bearing here, so a red type-check blocks merge.
+* Documentation-only changes (`.adoc`, `.well-known/`, AI manifests) follow the
+  lighter Perimeter-3 path in `CONTRIBUTING.md`.
