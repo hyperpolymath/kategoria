@@ -23,6 +23,7 @@ permissions:
 jobs:
   analyze:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     permissions:
       contents: read
       security-events: write
@@ -30,7 +31,11 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - language: javascript-typescript
+          # CodeQL `actions` scans the GitHub Actions workflow files (present in
+          # every repo). This repo has no CodeQL-scannable source language, so the
+          # prior `javascript-typescript` entry exited "no source files" on every
+          # run; closes the Hypatia codeql_language_matrix_mismatch finding.
+          - language: actions
             build-mode: none
 
     steps:
