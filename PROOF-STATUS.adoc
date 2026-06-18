@@ -1,0 +1,77 @@
+// SPDX-License-Identifier: MPL-2.0
+= kategoria — Proof Status
+:toc:
+
+[abstract]
+Verification status of kategoria's Idris 2 proof routes and demos. Every
+module type-checks under **Idris 2, version 0.7.0** via `idris2 --check`,
+with **no `postulate` and no `believe_me`** (and no `%hint`-smuggled axioms).
+This document records the actual, reproduced results — not aspirational
+"verdict" comments.
+
+== How to reproduce
+
+[source,sh]
+----
+# Idris 2 0.7.0 (Chez backend). Per-module check (modules are flat, stdlib-only):
+for f in examples/*.idr routes/alpha-extend/*.idr; do
+  ( cd "$(dirname "$f")" && idris2 --check "$(basename "$f")" )
+done
+----
+
+== Verified modules (13 / 13 PASS)
+
+=== Demos (`examples/`)
+* `Demo_ProvenArithmetic.idr` — operations carrying compile-time correctness proofs.
+* `Demo_SafeAPI.idr` — API misuse made unrepresentable.
+* `Demo_StateMachine.idr` — state-indexed transitions.
+
+=== Route α — type-system level ladder (`routes/alpha-extend/`)
+[cols="1,4",options="header"]
+|===
+| Module | Demonstrates
+| `Level01_BasicTypes`     | primitive types
+| `Level02_ADTs`           | algebraic data types + exhaustiveness
+| `Level03_Polymorphism`   | parametric polymorphism
+| `Level04_TypeClasses`    | interfaces / constrained generics
+| `Level05_GADTs`          | a type-safe expression evaluator (ill-typed terms unrepresentable)
+| `Level06_DependentTypes` | value-indexed types
+| `Level07_LinearTypes`    | QTT multiplicities — resources used exactly once
+| `Level08_Refinement`     | refinement via dependent pairs `(x ** p x)`
+| `Level09_SessionTypes`   | session-typed protocol as an indexed monad
+| `Level10_CubicalTypes`   | cubical-flavoured constructions
+|===
+
+== Fixes applied (2026-06-18) — these modules previously did NOT compile
+
+Four modules asserted "✓ PASS" in comments but failed `idris2 --check`. They
+are now genuinely verified:
+
+* *Level03* — the demo's `Pair`/`MkPair`/`fst`/`snd` shadowed `Builtin`'s
+  tuple names (ambiguous elaboration); `%hide`d the Builtin versions, and
+  qualified an ambiguous `length` as `String.length`.
+* *Level07* — `openFile` took a *linear* `String` then passed it to an
+  unrestricted constructor ("linear name in non-linear context"). The path
+  is now unrestricted (ω); the linear resource is the *handle*, as the demo
+  intends (`readFile`/`closeFile` consume it once).
+* *Level08* — used `Vect`/`index`/`natToFinLT` without importing
+  `Data.Vect`/`Data.Fin`; and `LTE 85 100` exceeded the default auto-search
+  depth (`%auto_implicit_depth 200`).
+* *Level09* — *removed a `postulate`*. The `SessionM` indexed monad had only
+  `Pure`/`Bind`, so `send`/`recv`/`close` (which must transition the protocol
+  index) were uninhabitable and were faked via `postulate recvPlaceholder : a`
+  (which Idris 2 does not even parse). Added the missing primitive
+  constructors `DoSend`/`DoRecv`/`DoClose`; `recv` is now the deferred
+  `DoRecv` operation — its value is produced at interpretation, with no
+  postulate or `believe_me`.
+
+== Honest scope
+
+* These are *type-level* demonstrations of what Idris 2's type system accepts
+  and rejects. The "REJECT" cases are documented as commented-out type errors.
+* `Level09`'s session monad is a **type-discipline** artefact: `DoRecv` is a
+  deferred operation whose runtime value would come from a real transport
+  (not implemented). The protocol-ordering safety is real (carried by the
+  indexed type + proven `dualInvolutive`); there is no runtime I/O.
+* No claim is made that the route ladder is *complete* w.r.t. any external
+  type-system taxonomy — each module demonstrates one feature.
