@@ -13,8 +13,10 @@ module Level07_LinearTypes
 data LHandle : Type where
   MkHandle : (tag : String) -> LHandle
 
--- Open returns a linear handle (multiplicity 1)
-openFile : (1 _ : String) -> LHandle
+-- Open returns a linear handle (multiplicity 1). The path String is
+-- unrestricted (ω); the *handle* is the linear resource (see readFile/
+-- closeFile, which consume it exactly once).
+openFile : String -> LHandle
 openFile path = MkHandle path
 
 -- Read consumes the handle and returns data + a new handle

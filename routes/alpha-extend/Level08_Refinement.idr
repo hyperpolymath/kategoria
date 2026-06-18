@@ -10,6 +10,12 @@
 module Level08_Refinement
 
 import Data.Nat
+import Data.Vect
+import Data.Fin
+
+-- LTE proofs for literal bounds (e.g. LTE 85 100) need a deeper auto-search
+-- than the default; raise the implicit-search depth so they are found.
+%auto_implicit_depth 200
 
 -- Refinement type: a value paired with a proof of a property
 -- {x : Nat | x > 0}  becomes  (x : Nat ** LTE 1 x)

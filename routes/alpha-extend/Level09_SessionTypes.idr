@@ -103,6 +103,14 @@ data SessionM : (before : Protocol) -> (after : Protocol) -> Type -> Type where
   ||| Sequence two session operations — protocol states must chain
   ||| (the "after" of the first must equal the "before" of the second)
   Bind : SessionM p1 p2 a -> (a -> SessionM p2 p3 b) -> SessionM p1 p3 b
+  ||| Primitive: consume one `Send a rest` step, transitioning to `rest`.
+  DoSend : (val : a) -> SessionM (Send a rest) rest ()
+  ||| Primitive: consume one `Recv a rest` step, yielding the value → `rest`.
+  ||| The value is produced when the session is interpreted against a real
+  ||| transport — this is a deferred operation, not a conjured value.
+  DoRecv : SessionM (Recv a rest) rest a
+  ||| Primitive: consume the terminal `End`.
+  DoClose : SessionM End End ()
 
 ------------------------------------------------------------------------
 -- Session Operations
@@ -116,27 +124,21 @@ data SessionM : (before : Protocol) -> (after : Protocol) -> Type -> Type where
 ||| compile-time type error.
 export
 send : (val : a) -> SessionM (Send a rest) rest ()
-send val = Pure ()
+send val = DoSend val
 
--- Stub value produced by recv when no real transport is wired.
--- The TYPE SAFETY guarantee is in the indexed monad type, not here.
--- TODO(#L9-runtime): Remove this postulate and wire to real transport I/O.
-private
-postulate recvPlaceholder : a
-
-||| Receive a value. The channel type transitions from
-||| `Recv a rest` to `rest`.
-|||
-||| The received value has type `a` — guaranteed by the protocol.
-||| NOTE: value is a named stub until a real transport is wired.
+||| Receive a value. The channel type transitions from `Recv a rest` to
+||| `rest`. The received value has type `a` — guaranteed by the protocol.
+||| `recv` is the deferred `DoRecv` primitive; the actual value is produced
+||| when the session is interpreted against a real transport (no postulate,
+||| no believe_me — the protocol safety lives in the indexed type).
 export
 recv : SessionM (Recv a rest) rest a
-recv = Pure recvPlaceholder
+recv = DoRecv
 
 ||| Close a completed channel. Only callable when protocol is `End`.
 export
 close : SessionM End End ()
-close = Pure ()
+close = DoClose
 
 ------------------------------------------------------------------------
 -- Syntactic Sugar (Bind Operator)

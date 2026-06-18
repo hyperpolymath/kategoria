@@ -8,6 +8,14 @@
 
 module Level03_Polymorphism
 
+-- This demo defines its own Pair/MkPair/fst/snd to illustrate parametric
+-- polymorphism; those names shadow Builtin's tuple ones. Hide the Builtin
+-- versions so the demonstration names elaborate unambiguously.
+%hide Builtin.Pair
+%hide Builtin.MkPair
+%hide Builtin.fst
+%hide Builtin.snd
+
 -- A polymorphic identity function: works for ANY type
 identity : a -> a
 identity x = x
@@ -46,7 +54,7 @@ doubled : MyList Int
 doubled = mapList (* 2) (Cons 1 (Cons 2 (Cons 3 Empty)))
 
 lengths : MyList Nat
-lengths = mapList length (Cons "hi" (Cons "world" Empty))
+lengths = mapList String.length (Cons "hi" (Cons "world" Empty))
 
 -- REJECT (uncomment to see the type error):
 -- bad : Int
