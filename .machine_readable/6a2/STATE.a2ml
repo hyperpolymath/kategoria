@@ -1,64 +1,61 @@
 # SPDX-License-Identifier: MPL-2.0
 # Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
 #
-# STATE.a2ml — Project state checkpoint (META-TEMPLATE)
+# STATE.a2ml — Project state checkpoint for kategoria.
 #
-# This is the STATE file for kategoria.
-# When consumed by a new project, replace {{PLACEHOLDER}} tokens
-# and customize sections below for the target project.
+# HISTORY NOTE: until 2026-07-21 this file was unedited RSR-template
+# residue describing the TEMPLATE repository ("95% complete, production,
+# maintenance"). Everything below is measured project state.
 
 [metadata]
 project = "kategoria"
-version = "0.2.0"
-last-updated = "2026-02-28"
+version = "0.1.0"
+last-updated = "2026-07-21"
 status = "active"  # active | paused | archived
 
 [project-context]
 name = "kategoria"
-purpose = "Canonical RSR-compliant repository template providing scaffolding for all hyperpolymath projects — including CI/CD, AI manifests, ABI/FFI standards, container ecosystem, and governance infrastructure."
-completion-percentage = 95
+purpose = "The Type Safety Challenge: five independent language-implementation routes (α Extend Idris 2, β Dyadic, γ Aspect, δ Aggregate, ε Clean Slate) exploring all 10 known levels of type safety. Named after Aristotle's Categories."
+completion-percentage = 25
 
 [position]
-phase = "maintenance"      # design | implementation | testing | maintenance | archived
-maturity = "production"    # experimental | alpha | beta | production | lts
+phase = "implementation"   # design | implementation | testing | maintenance | archived
+maturity = "alpha"         # experimental | alpha | beta | production | lts
+
+[verification]
+# Enforced by scripts/check-idris2-proofs.sh (Proof Gate workflow on push/PR).
+# The gate HARD-FAILS when idris2 is absent and rejects axiom smuggling
+# (postulate / believe_me / assert_total / %hint outside comments).
+proof-modules = 13
+proof-modules-passing = 13
+provers-verified = ["Idris 2 0.7.0", "Idris 2 0.8.0 (nixpkgs)"]
+last-verified = "2026-07-21"
 
 [route-to-mvp]
 milestones = [
-  { name = "Phase 0: Core scaffolding (justfile, CI/CD, .machine_readable)", completion = 100 },
-  { name = "Phase 1: ABI/FFI standard (Idris2/Zig templates)", completion = 100 },
-  { name = "Phase 1b: AI Gatekeeper Protocol (0-AI-MANIFEST.a2ml)", completion = 100 },
-  { name = "Phase 1c: TOPOLOGY.md standard and guide", completion = 100 },
-  { name = "Phase 1d: Maintenance gate (axes, checklist, approach)", completion = 100 },
-  { name = "Phase 1e: Trustfile / contractiles", completion = 100 },
-  { name = "Phase 2: Container ecosystem templates (stapeln)", completion = 100 },
-  { name = "Phase 3: Multi-forge sync hardening", completion = 0 },
-  { name = "Phase 4: Nix/Guix reproducible shells", completion = 50 },
+  { name = "Route α: L1-L7 native Idris 2, verified", completion = 100 },
+  { name = "Route α: L8 refinement (dependent-pair encoding), L9 sessions (Brady indexed monad)", completion = 100 },
+  { name = "Route α: L10 cubical — WALL, documented as impossible on this route", completion = 100 },
+  { name = "Proof gate: script + Justfile + CI (cannot silently pass)", completion = 100 },
+  { name = "Route δ: typell bridge (routes/delta-aggregate/TYPELL-BRIDGE.adoc)", completion = 40 },
+  { name = "Route δ: full aggregate (F*/LH + Scribble + Agda --cubical over one ABI)", completion = 0 },
+  { name = "Routes β, γ: not started", completion = 0 },
+  { name = "Route ε: research phase (Nuyts/Devriese 2023, Gratzer et al. 2024)", completion = 5 },
 ]
 
 [blockers-and-issues]
-# No active blockers
+issues = [
+  "src/interface/ffi is uninstantiated RSR template scaffold ({{project}} placeholders, does not compile under any zig) — quarantined in TOPOLOGY.md; instantiate or remove when a route needs a C ABI",
+  "13 stale remote branches, all unmerged by commit-graph (probable squash-merge artifacts) — prune needs per-branch content diff",
+]
 
 [critical-next-actions]
 actions = [
-  "Container templates complete — test with `just container-init`",
-  "Validate container templates across wolfi-base and static Chainguard images",
-  "Harden multi-forge sync for GitLab/Bitbucket mirroring edge cases",
-  "Expand Nix/Guix development shell templates",
+  "Land typell conformance suite (typell repo: crates/typell-core/tests/kategoria_conformance.rs)",
+  "Decide src/interface/ffi disposition (instantiate for route δ ABI vs remove)",
+  "Route δ next step: Agda --cubical bridge prototype for L10",
 ]
 
-[maintenance-status]
-last-run-utc = "never"
-last-report = "docs/reports/maintenance/latest.json"
-last-result = "unknown"  # unknown | pass | warn | fail
-open-warnings = 0
-open-failures = 0
-
 [ecosystem]
-part-of = ["RSR Framework", "stapeln ecosystem"]
-depends-on = ["stapeln", "selur-compose", "cerro-torre", "svalinn", "vordr", "k9-svc"]
-
-# ---------------------------------------------------------------------------
-# NOTE FOR CONSUMERS: When using this template to create a new repo, reset
-# the fields above to your project's values and replace all {{PLACEHOLDER}}
-# tokens. The milestones above describe the TEMPLATE's evolution, not yours.
-# ---------------------------------------------------------------------------
+part-of = ["hyperpolymath type-safety programme"]
+related = ["typell (aggregate-style verification kernel; bridge registered)", "panll (consumes typell)", "007", "typed-wasm", "nextgen-languages"]
