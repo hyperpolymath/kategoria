@@ -1,0 +1,148 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+// Copyright (c) 2026 Jonathan D.A. Jewell (hyperpolymath) <j.d.a.jewell@open.ac.uk>
+= The Typell Bridge — Route δ's first measurement target
+:toc:
+
+*Status: bridge registered 2026-07-21. Measured, not aspirational.*
+
+== Why this document exists
+
+Route δ (Aggregate Bridge) proposes reaching all 10 levels by bridging
+best-in-class provers over a shared ABI — Idris 2 (L1–7), F*/Liquid Haskell
+(L8), Scribble/MPST (L9), Agda `--cubical` (L10). No such bridge has been
+built here yet (`src/bridges/` holds only a manifest).
+
+Meanwhile https://github.com/hyperpolymath/typell[typell] — "PanLL's
+verification kernel" — exists, compiles, and passes *225 kernel tests*. It is
+a live *aggregate-style engine*: one Rust kernel unifying HM inference,
+QTT/linear usage, row-polymorphic effects, binary session types, refinement
+predicates with a built-in decision procedure, dependent array lengths, and
+SI dimensional analysis, consumed by 13 language-bridge crates.
+
+Typell is **not** route δ as prescribed (it aggregates *mechanisms inside one
+kernel*, not *provers across an ABI*), but it is the first concrete aggregate
+implementation this challenge can measure. This bridge feeds kategoria's
+verified level modules into typell as a conformance target, and feeds
+kategoria's proof discipline back into typell's own proof layer.
+
+== The L1–L10 collision (read this first)
+
+Kategoria and typell BOTH number their hierarchies L1–L10, but they measure
+*different things*. Typell's ROADMAP previously claimed kategoria "uses" its
+progression — false, and corrected in the companion typell change.
+
+[cols="1,3,3",options="header"]
+|===
+| N | kategoria L*N* (language *feature*) | typell L*N* (safety *property*, query-oriented)
+
+| 1 | Basic types | Parse-time safety (well-formed AST)
+| 2 | Algebraic data types | Schema-binding safety (named type resolution)
+| 3 | Parametric polymorphism | Type-compatible operations (unification)
+| 4 | Type classes | Null-safety (option types, totality)
+| 5 | GADTs | Injection-proof safety (refinement predicates)
+| 6 | Dependent types | Result-type safety (return type inference)
+| 7 | Linear types (QTT) | Cardinality safety (bounded quantifiers)
+| 8 | Refinement types | Effect-tracking safety (algebraic effects)
+| 9 | Session types | Temporal safety (session types, state machines)
+| 10 | Cubical / homotopy | Linearity safety (QTT bounded usage)
+|===
+
+The relationship is *enablement*, not identity: a kategoria feature-level is
+the type-theoretic mechanism that makes one or more typell property-levels
+enforceable. Only L9 coincidentally aligns.
+
+== Enablement matrix (measured 2026-07-21)
+
+Evidence is from `typell/crates/typell-core/src/` at the commit this bridge
+was written against; "absent" means no code evidence, not a judgement of
+difficulty. Kategoria's side is verified by `scripts/check-idris2-proofs.sh`
+(13/13 under Idris 2 0.7.0 and 0.8.0).
+
+[cols="2,3,2,3",options="header"]
+|===
+| kategoria level (verified module) | typell mechanism (evidence) | typell status | typell property-levels enabled
+
+| L1 Basic Types (`Level01_BasicTypes.idr`)
+| `PrimitiveType` enum: Bool/Int/I8..U128/Float/Char/String/Unit/Never (`types.rs`)
+| implemented
+| ty-L1 parse, ty-L3 type-compatible ops
+
+| L2 ADTs (`Level02_ADTs.idr`)
+| Nominal constructors only: `Type::Named{name,args}` + `Tuple` (`types.rs`); no sum-type declaration or exhaustiveness checking found
+| partial
+| ty-L2 schema-binding (nominal resolution)
+
+| L3 Polymorphism (`Level03_Polymorphism.idr`)
+| `Type::Var` + HM generalization/instantiation (`infer.rs`), Robinson unification with occurs check (`unify.rs`)
+| implemented
+| ty-L3, ty-L6 result-type inference
+
+| L4 Type Classes (`Level04_TypeClasses.idr`)
+| No constraint/trait mechanism found in the kernel
+| absent
+| — (would generalize operator checking)
+
+| L5 GADTs (`Level05_GADTs.idr`)
+| No indexed-constructor refinement found
+| absent
+| — (would strengthen ty-L9 state machines)
+
+| L6 Dependent Types (`Level06_DependentTypes.idr`)
+| Dependent *lengths* only: `Array{elem, length: Option<Term>}` + `terms_unify` syntactic equality (`types.rs`, `unify.rs`); no Pi/Sigma binders
+| partial
+| ty-L7 cardinality (bounded quantifiers)
+
+| L7 Linear Types (`Level07_LinearTypes.idr`)
+| QTT semiring `Zero/One/Omega/Bounded(u64)` + `TypeDiscipline::{Affine,Linear}` (`types.rs`), usage tracking (`linear.rs`), context ops (`qtt.rs`)
+| implemented
+| ty-L10 linearity
+
+| L8 Refinement (`Level08_Refinement.idr`)
+| `Predicate` language (Gt/Lt/Eq/And/Or/Not/Raw over `Term`) + built-in decision procedure `eval_predicate`/`try_discharge_refinements` (`proof.rs`); full SMT delegated to Echidna (future)
+| implemented (decidable fragment)
+| ty-L5 injection-proof
+
+| L9 Session Types (`Level09_SessionTypes.idr`)
+| Session duality, well-formedness, protocol checking (`session.rs`), session unification + `SessionType.has_vars` (`unify.rs`, `types.rs`); *binary sessions only*
+| implemented (binary)
+| ty-L9 temporal
+
+| L10 Cubical (`Level10_CubicalTypes.idr` — route α's documented wall)
+| No path types, no transport, no univalence
+| absent
+| — (no typell property-level requires it today)
+|===
+
+Typell also implements axes kategoria has no level for: row-polymorphic
+algebraic effects (`effects.rs` → ty-L8), SI dimensional analysis with
+compile-time exponent evaluation (`dimensional.rs`), and serializable proof
+obligations (`proof.rs`, `error.rs`). Modal types are *claimed* in typell's
+README/spec but no kernel evidence was found — treat as unverified.
+
+== What flows across the bridge
+
+1. *Kategoria → typell: conformance.* Each row above becomes a named test in
+   `typell/crates/typell-core/tests/kategoria_conformance.rs` (companion
+   change), exercising the cited mechanism through typell's public API.
+   Absent/partial rows are recorded as explicit gap tests or comments —
+   never silent passes.
+2. *Kategoria → typell: proof discipline.* At bridge registration, 5 of
+   typell's 6 Idris ABI proof modules failed `idris2 --check` (missing
+   `%language ElabReflection`; undefined `Step` relation in `Soundness.idr`;
+   a `Fin 11`-vs-`Fin 10` off-by-one in `LevelMonotonicity.idr`'s `SafeUp`
+   constructor — in the monotonicity theorem itself). Nobody had ever run
+   the checker. Kategoria's rule — a proof gate that cannot fail is not a
+   gate — travels with this bridge; typell gains the same hard-fail
+   `idris2 --check` gate and an honest `PROOF-STATUS.adoc`.
+3. *Typell → kategoria: route δ data.* Typell answers route δ's key question
+   ("can type safety survive crossing a language boundary?") in a weaker but
+   real form: 13 language frontends lower into one kernel representation.
+   Its gaps (type classes, GADTs, Pi/Sigma, multiparty sessions, cubical)
+   are exactly the deltas a full route δ must bridge externally.
+
+== What this bridge is not
+
+- Not a claim that typell "is" route δ — the scorecard row for δ stays `.`
+  until a bridge in the prescribed sense (multiple provers, one ABI) exists.
+- Not a dependency: kategoria remains prover-pure Idris 2; typell remains
+  self-contained Rust. The bridge is conformance + discipline, not linkage.

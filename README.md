@@ -236,14 +236,25 @@ field reports.
 
 | Route       | L1  | L2  | L3  | L4  | L5  | L6  | L7  | L8  | L9  | L10 |
 |-------------|-----|-----|-----|-----|-----|-----|-----|-----|-----|-----|
-| α Extend    |     |     |     |     |     |     |     |     |     |     |
-| β Dyadic    |     |     |     |     |     |     |     |     |     |     |
-| γ Aspect    |     |     |     |     |     |     |     |     |     |     |
-| δ Aggregate |     |     |     |     |     |     |     |     |     |     |
-| ε Clean     |     |     |     |     |     |     |     |     |     |     |
+| α Extend    | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✓   | ✗   |
+| β Dyadic    | .   | .   | .   | .   | .   | .   | .   | .   | .   | .   |
+| γ Aspect    | .   | .   | .   | .   | .   | .   | .   | .   | .   | .   |
+| δ Aggregate | .   | .   | .   | .   | .   | .   | .   | .   | .   | .   |
+| ε Clean     | .   | .   | .   | .   | .   | .   | .   | .   | .   | .   |
 
 *(✓ = passing, ~ = partial, . = not started, ✗ = proven impossible on
 this route)*
+
+Route α's row is enforced by CI: `scripts/check-idris2-proofs.sh` type-checks
+all 13 modules (verified under Idris 2 0.7.0 and 0.8.0) and rejects axiom
+smuggling. L8 and L9 pass via encodings (dependent pairs; Brady's indexed
+monad); L10 is route α's documented wall — see
+`routes/alpha-extend/Level10_CubicalTypes.idr`.
+
+Route δ has a measurement bridge before it has an implementation: the
+[typell](https://github.com/hyperpolymath/typell) verification kernel is a
+live aggregate-style engine mapped level-by-level in
+[`routes/delta-aggregate/TYPELL-BRIDGE.adoc`](routes/delta-aggregate/TYPELL-BRIDGE.adoc).
 
 # Level 11 and Beyond
 

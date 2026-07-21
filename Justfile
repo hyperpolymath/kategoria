@@ -265,14 +265,8 @@ init:
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Build the project (debug mode)
-build *args:
-    @echo "Building {{project}} (debug)..."
-    # TODO: Replace with your build command
-    # Examples:
-    #   cargo build {{args}}                    # Rust
-    #   mix compile {{args}}                    # Elixir
-    #   zig build {{args}}                      # Zig
-    #   deno task build {{args}}                # Deno/ReScript
+build *args: proof-check
+    @echo "kategoria's build IS type-checking: proof-check ran above."
     @echo "Build complete"
 
 # Build in release mode with optimizations
@@ -309,15 +303,12 @@ clean-all: clean
 # ═══════════════════════════════════════════════════════════════════════════════
 
 # Run all tests
-test *args:
-    @echo "Running tests..."
-    # TODO: Replace with your test command
-    # Examples:
-    #   cargo test {{args}}
-    #   mix test {{args}}
-    #   zig build test {{args}}
-    #   deno test {{args}}
-    @echo "Tests passed!"
+test *args: proof-check
+
+# Type-check all 13 verified Idris 2 modules (the repo's real substance).
+# Hard-fails when idris2 is absent — a gate that skips is not a gate.
+proof-check:
+    ./scripts/check-idris2-proofs.sh
 
 # Run tests with verbose output
 test-verbose:

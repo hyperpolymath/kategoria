@@ -2,9 +2,13 @@
 = Kategoria Roadmap
 :author: Jonathan D.A. Jewell
 
-== Current Status (2026-03-29)
+== Current Status (2026-07-21)
 
-Route α (Extend Idris 2) is the most advanced route.
+Route α (Extend Idris 2) is the most advanced route. All 13 modules
+(10 levels + 3 demos) pass `idris2 --check` under Idris 2 0.7.0 AND 0.8.0
+with no postulates, believe_me, or %hint smuggling — enforced by
+`scripts/check-idris2-proofs.sh` (the Proof Gate workflow runs it on every
+push and PR).
 
 === Route α Progress
 
@@ -14,23 +18,31 @@ Route α (Extend Idris 2) is the most advanced route.
 
 | 1 | Basic Types | ✓ | `Level01_BasicTypes.idr`
 | 2 | ADTs | ✓ | `Level02_ADTs.idr`
-| 3 | Parametric Polymorphism | ✓ | Native (Idris 2)
-| 4 | Higher-Kinded Types | ✓ | Native (Idris 2)
-| 5 | GADTs | ✓ | Native (Idris 2)
+| 3 | Parametric Polymorphism | ✓ | `Level03_Polymorphism.idr`
+| 4 | Type Classes | ✓ | `Level04_TypeClasses.idr`
+| 5 | GADTs | ✓ | `Level05_GADTs.idr`
 | 6 | Dependent Types | ✓ | `Level06_DependentTypes.idr`
-| 7 | Linear Types | ✓ | Native (QTT)
-| 8 | Refinement Types | ~ | Elaborator sugar in progress
-| 9 | Session Types | ✓ | `Level09_SessionTypes.idr`
-| 10 | Cubical/Homotopy | ✗ | `Level10_CubicalTypes.idr` (wall documented)
+| 7 | Linear Types | ✓ | `Level07_LinearTypes.idr` (native QTT)
+| 8 | Refinement Types | ✓ | `Level08_Refinement.idr` (dependent-pair encoding, auto-search proofs)
+| 9 | Session Types | ✓ | `Level09_SessionTypes.idr` (Brady indexed-monad encoding)
+| 10 | Cubical/Homotopy | ✗ | `Level10_CubicalTypes.idr` (wall documented; type-checks as an honest engineering record, does not deliver univalence)
 |===
 
-*Route α score: 9/10 (8 native + 1 encoding, 1 impossible)*
+*Route α score: 9/10 (7 native + 2 encodings, 1 impossible)*
 
 === Other Routes
 
 - **Route β (Dyadic)**: Not started. Next priority for L10.
 - **Route γ (Aspect)**: Not started. L10 as aspect is risky (see cross-pollination #001).
-- **Route δ (Aggregate)**: Not started. Bridge to Agda --cubical is fastest path to L10.
+- **Route δ (Aggregate)**: Opened 2026-07-21 via the typell bridge —
+  link:routes/delta-aggregate/TYPELL-BRIDGE.adoc[TYPELL-BRIDGE.adoc] maps the
+  https://github.com/hyperpolymath/typell[typell] verification kernel
+  (a live aggregate-style engine: HM + dependent lengths + QTT/linear +
+  effects + sessions + refinement/SMT + dimensional, 225 kernel tests) onto
+  kategoria's levels. Typell is NOT the full route δ prescription
+  (Idris 2 + F*/Liquid Haskell + Scribble + Agda --cubical over one ABI),
+  but it is the first concrete aggregate implementation to measure against.
+  Bridge to Agda --cubical remains the fastest path to L10.
 - **Route ε (Clean Slate)**: Research phase. Reading Nuyts & Devriese (2023), Gratzer et al. (2024).
 
 == Milestones
@@ -39,8 +51,9 @@ Route α (Extend Idris 2) is the most advanced route.
 * [x] L1-L7: Native Idris 2 coverage verified
 * [x] L9: Session types via indexed monad encoding
 * [x] L10: Wall documented with best-effort encoding
-* [ ] L8: Refinement types via elaborator sugar
-* [ ] Shared test suite: all challenge programs automated
+* [x] L8: Refinement types via dependent-pair encoding (2026-06; `%auto_implicit_depth` for literal bounds)
+* [x] Route α programs automated: `just proof-check` + Proof Gate CI (2026-07-21)
+* [ ] Shared test suite generalized across routes (only α has code today)
 
 === v0.2.0 — Second Route Begins
 * [ ] Route δ: Bridge to Agda --cubical for L10

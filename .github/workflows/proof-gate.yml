@@ -1,0 +1,31 @@
+# SPDX-License-Identifier: MPL-2.0
+# Proof Gate — type-checks the repo's real substance on every push and PR.
+#
+# This is the FIRST workflow in this repository that compiles the Idris 2
+# modules the project exists to produce. It hard-fails when the prover is
+# missing (scripts/check-idris2-proofs.sh refuses to skip).
+#
+# Verified locally under Idris 2 0.7.0 (system) and 0.8.0 (nixpkgs):
+# 13/13 modules PASS, axiom-smuggling scan clean.
+name: Proof Gate
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  idris2-proofs:
+    name: idris2 --check (13 modules)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: cachix/install-nix-action@a49548c11d9846ad46ecc0115273879b045f001c # v31.10.7
+
+      - name: Run proof gate
+        run: nix shell nixpkgs#idris2 -c ./scripts/check-idris2-proofs.sh
