@@ -88,8 +88,12 @@ difficulty. Kategoria's side is verified by `scripts/check-idris2-proofs.sh`
 | — (would strengthen ty-L9 state machines)
 
 | L6 Dependent Types (`Level06_DependentTypes.idr`)
-| Dependent *lengths* only: `Array{elem, length: Option<Term>}` + `terms_unify` syntactic equality (`types.rs`, `unify.rs`); no Pi/Sigma binders
-| partial
+| `Type::Pi {param_name, param_type, body}` and `Type::Sigma` binders plus
+  dependent `Array{elem, length: Option<Term>}` with `terms_unify`
+  (`types.rs:618-640`, `unify.rs`). CORRECTED 2026-07-27: the original
+  matrix said "lengths only, no Pi/Sigma binders" — written before the
+  Pi/Sigma variants were found; the conformance suite exercises both.
+| implemented (representation + unification; checking depth measured by the conformance suite)
 | ty-L7 cardinality (bounded quantifiers)
 
 | L7 Linear Types (`Level07_LinearTypes.idr`)
@@ -122,8 +126,9 @@ README/spec but no kernel evidence was found — treat as unverified.
 == What flows across the bridge
 
 1. *Kategoria → typell: conformance.* Each row above becomes a named test in
-   `typell/crates/typell-core/tests/kategoria_conformance.rs` (companion
-   change), exercising the cited mechanism through typell's public API.
+   `typell/crates/typell-core/tests/kategoria_conformance.rs` (LANDED —
+   typell PR #39: 25 tests pass, 3 honest `#[ignore]` gap markers for
+   L4/L5/L10), exercising the cited mechanism through typell's public API.
    Absent/partial rows are recorded as explicit gap tests or comments —
    never silent passes.
 2. *Kategoria → typell: proof discipline.* At bridge registration, 5 of
@@ -134,11 +139,17 @@ README/spec but no kernel evidence was found — treat as unverified.
    the checker. Kategoria's rule — a proof gate that cannot fail is not a
    gate — travels with this bridge; typell gains the same hard-fail
    `idris2 --check` gate and an honest `PROOF-STATUS.adoc`.
+   LANDED 2026-07-27 (typell PR #39): all five required modules now PASS
+   under Idris 2 0.7.0 and 0.8.0 (`Layout.idr` quarantined). The gate's
+   hole-scan also caught a silent `?featureMonoGeneral` hole — the
+   level-subsumption theorem had only been proven for L1; it is now
+   proven for all level pairs.
 3. *Typell → kategoria: route δ data.* Typell answers route δ's key question
    ("can type safety survive crossing a language boundary?") in a weaker but
    real form: 13 language frontends lower into one kernel representation.
-   Its gaps (type classes, GADTs, Pi/Sigma, multiparty sessions, cubical)
-   are exactly the deltas a full route δ must bridge externally.
+   Its gaps (type classes, GADTs, sum-type exhaustiveness, multiparty
+   sessions, cubical) are exactly the deltas a full route δ must bridge
+   externally.
 
 == What this bridge is not
 
