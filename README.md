@@ -248,9 +248,14 @@ scripts/check-idris2-proofs.sh
 
 == License
 
-SPDX-License-Identifier: MPL-2.0 — see link:LICENSE[LICENSE].|===
+SPDX-License-Identifier: MPL-2.0 — see link:LICENSE[LICENSE].| Mature theory, production use
+|===
+
+== What is standard and what is ours
+
+[cols="1,2,2", options="header"]
+|===
 | Concept | Status | Home
 
 | The 10 levels of type safety
 | Standard (assembled from existing literature)
-| The framing is ours

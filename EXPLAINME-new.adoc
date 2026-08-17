@@ -1,0 +1,118 @@
+// SPDX-License-Identifier: MPL-2.0
+= Kategoria — EXPLAINME
+:toc: preamble
+:toc-title: Contents
+:icons: font
+:doctype: article
+
+This file backs every factual claim in link:README.adoc[README.adoc] with code paths and honest caveats. Read it if you are doing due diligence on whether the story matches the code.
+
+== Claim-to-implementation map
+
+=== The 10 levels represent distinct kinds of type safety
+
+[quote, README.adoc]
+____
+As of 2026, type theory has identified 10 distinct levels of type safety.
+____
+
+How this is implemented::
+The 10 levels are assembled from the type theory literature: FORTRAN (basic types), ML (ADTs), System F (parametricity), Haskell (HKTs), GHC (GADTs), LF/Coq/Agda/Idris (dependent types), linear logic/Rust (linear types), F*/Liquid Haskell (refinement), Honda (session), HoTT/cubical (homotopy). The test suite in `shared/test-suite/` contains one challenge program per level.
+
+Caveat::
+The number 10 is a count of *currently recognised, practically distinct* levels. It is not a theorem that there are exactly 10. The correspondence to Aristotle's 10 categories is a motivating observation, not a proven structural fact. Several candidates for level 11+ exist (graded, effect, modal types) and are tracked. Observational equality may *replace* level 10 rather than extend the list.
+
+=== No single production language covers all 10
+
+[quote, README.adoc]
+____
+No single production language covers all 10 today. Most cover 3-4. The best (Idris 2) covers 7.
+____
+
+How this is implemented::
+The progress matrix in the README is the evidence. Idris 2 natively covers levels 1–7 (QTT gives dependent + quantitative/linear). No production language has native support for all of refinement, session, and cubical types on top of that.
+
+Caveat::
+This claim is about *production* languages with native support. Academic prototypes or encodings (e.g., session types as libraries in Agda) exist. The distinction between "native" and "encoding" is load-bearing: encodings may satisfy the test suite but impose usability/preservation penalties that matter in practice.
+
+=== Route α passes levels 1–9
+
+[quote, README.adoc]
+____Route α Extend: L1–L7 ✓, L8 ✓~, L9 ✓~, L10 ✗____
+
+How this is implemented::
+`link:routes/alpha-extend/[]` contains Idris 2 code covering levels 1–7 natively. L8 (refinement) passes via elaborator-generated dependent pairs. L9 (session) passes via Brady's published indexed-monad encoding. CI (`link:scripts/check-idris2-proofs.sh[]`) type-checks all 13 modules under Idris 2 0.7.0 and 0.8.0, rejecting axiom smuggling.
+
+Caveat::
+**L8 and L9 are encodings, not native type formers.** An encoding satisfies the test suite but may not preserve the usability, error messages, or compositionality of a native implementation. The `✓~` marker in the progress matrix reflects this. L10 is the documented wall: QTT (Idris 2's core) and cubical type theory are different foundations. `link:routes/alpha-extend/Level10_CubicalTypes.idr[]` documents the obstruction.
+
+=== Route δ has a measurement bridge (Typell)
+
+[quote, README.adoc]
+____Route δ has a measurement bridge before it has an implementation: the typell verification kernel is a live aggregate-style engine mapped level-by-level.____
+
+How this is implemented::
+`link:routes/delta-aggregate/TYPELL-BRIDGE.adoc[]` documents the level-by-level mapping from Typell's capabilities to Kategoria's levels.
+
+Caveat::
+Typell is in Phase 0 (vision capture and repo scaffolding). The bridge document maps *planned* capabilities, not running code. No end-to-end type checking through the Typell aggregate exists yet.
+
+=== TF0 is a calibration calculus
+
+[quote, README.adoc]
+____TypeFix Zero intentionally does the opposite: it strips the design down to the smallest typed, Turing-complete core that remains mathematically honest.____
+
+How this is implemented::
+TF0 is defined as: universe stratification, function types, naturals, lambda abstraction/application, one explicit fixed-point primitive.
+
+Caveat::
+TF0 is a proposed calculus, not yet mechanised in this repo. It serves as a conceptual baseline for comparing routes, not as an implementation target.
+
+== Known gaps
+
+[CAUTION]
+====
+**The 10-level framing is provisional.** It represents our best understanding as of 2026. Candidates for level 11+ exist. Observational equality may restructure level 10. The count may change.
+====
+
+[CAUTION]
+====
+**Route α L8/L9 are encodings.** They pass the test suite but may not deliver the UX or compositionality of native support. This is the inherent limitation of the "extend" strategy.
+====
+
+[CAUTION]
+====
+**Routes β, γ, δ, ε are not started.** Only Route α has running code. The remaining routes exist as design documents and strategy descriptions.
+====
+
+[CAUTION]
+====
+**Route ε (Clean Slate) is the highest-risk route.** It is unknown whether a consistent type theory subsuming all 10 levels exists. The fragmentation may be fundamental.
+====
+
+[CAUTION]
+====
+**Aristotle correspondence is not a theorem.** The matching count (10 categories, 10 type-safety levels) is a motivating observation. It may be coincidence, deep structure, or an artifact of categorisation.
+====
+
+== Evidence Index
+
+[cols="2,3", options="header"]
+|===
+| Path | Proves
+
+| `routes/alpha-extend/`
+| Route α Idris 2 code (L1–L9 passing via native + encoding)
+
+| `routes/alpha-extend/Level10_CubicalTypes.idr`
+| Documents the L10 wall for Route α
+
+| `scripts/check-idris2-proofs.sh`
+| CI check rejecting axiom smuggling
+
+| `shared/test-suite/`
+| 10 challenge programs (one per level)
+
+| `routes/delta-aggregate/TYPELL-BRIDGE.adoc`
+| Level-by-level mapping for Route δ (design doc, not running code)
+|===
