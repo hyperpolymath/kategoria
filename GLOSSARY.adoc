@@ -1,0 +1,87 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Kategoria — Glossary
+:toc: preamble
+:toc-title: Contents
+:icons: font
+:doctype: article
+
+Cross-reference glossary for link:README.adoc[README.adoc], link:EXPLAINME.adoc[EXPLAINME.adoc], and the Katoria wiki.
+
+== The 10 levels
+
+[[level-1]]
+Level 1: Basic Types::
+  Typing that prevents mixing incompatible primitives (e.g., adding an int to a string). FORTRAN (1957).
+
+[[level-2]]
+Level 2: Algebraic Data Types::
+  Typing that forces handling of all cases and makes impossible states unrepresentable. ML (1973).
+
+[[level-3]]
+Level 3: Parametric Polymorphism::
+  Typing that prevents generic code from inspecting type parameters. System F (1972).
+
+[[level-4]]
+Level 4: Higher-Kinded Types::
+  Typing that abstracts over type constructors (e.g., `Functor`). Haskell (1990).
+
+[[level-5]]
+Level 5: GADTs::
+  Generalised Algebraic Data Types: typing where constructors return different type indices, enabling DSL embedding. GHC (~2005).
+
+[[level-6]]
+Level 6: Dependent Types::
+  Typing where types depend on values, enabling logical proofs at compile time. LF/Coq/Agda/Idris.
+
+[[level-7]]
+Level 7: Linear / Affine Types::
+  Typing that controls resource usage (exactly once, at most once). Linear Logic (1987), Rust, Idris 2.
+
+[[level-8]]
+Level 8: Refinement Types::
+  Typing that restricts values by predicates (e.g., `{x : Int | x > 0}`). F*, Liquid Haskell.
+
+[[level-9]]
+Level 9: Session Types::
+  Typing that enforces communication protocol compliance. Honda (1993).
+
+[[level-10]]
+Level 10: Homotopy / Cubical Types::
+  Typing that gives computational content to equality (univalence, higher inductive types). HoTT (2013).
+
+== The five routes
+
+[[route-alpha]]
+Route α (Extend Idris 2)::
+  Extend the strongest existing production language via elaborator reflection and plugins. *Wall:* QTT and cubical type theory are different foundations.
+
+[[route-beta]]
+Route β (Dyadic Split)::
+  Two languages sharing syntax/parser, diverging at the type checker (QTT + Cubical), bridged by shared ABI.
+
+[[route-gamma]]
+Route γ (Aspect Injection)::
+  Stable dependent+QTT core with independent type-checking aspects woven into compilation.
+
+[[route-delta]]
+Route δ (Aggregate Bridge)::
+  Existing best-in-class languages per level range, bridged through shared ABI/FFI.
+
+[[route-epsilon]]
+Route ε (Clean Slate)::
+  New core calculus unifying everything. Highest risk, highest potential reward. Existence of a consistent unifying theory is unknown.
+
+== Supporting concepts
+
+[[tf0]]
+TypeFix Zero (TF0)::
+  The minimal typed, Turing-complete calibration calculus: universe stratification, function types, naturals, lambda, one fixed-point primitive. Used as a diagnostic baseline, not an implementation target.
+
+[[stumble-journal]]
+Stumble journal::
+  The record of what went wrong, why, and what was learned. The most important artefact in the project. Shared methodology with echo-types' retraction ledger.
+
+[[encoding-vs-native]]
+Encoding vs. native::
+  An encoding satisfies a test suite by reducing a level's type former to existing type formers (e.g., session types as indexed monads). A native implementation provides the type former as a first-class language construct. Encodings may not preserve usability or compositionality.
+|===
