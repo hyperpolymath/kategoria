@@ -1,0 +1,386 @@
+// SPDX-License-Identifier: MPL-2.0 = Kategoria — The Type Safety
+Challenge :toc: preamble :toc-title: Contents :icons: font :doctype:
+article
+
+Five approaches to building a language with every known level of type
+safety. Named after Aristotle’s Κατηγορίαι.
+
+== Overview
+
+As of 2026, type theory has identified 10 distinct levels of type
+safety. No single production language covers all 10. Most cover 3–4. The
+best (Idris 2) covers 7.
+
+Kategoria is an exploration, not a product. We try five routes toward
+full coverage, share what we learn, and document everything—including
+the failures. The stumble journal is the most important artefact.
+
+Why this exists: type theory is the invisible engineering behind every
+compiler error that prevents a bug. Most working programmers have never
+heard the term. Most PL courses stop at level 3. This project maps the
+territory from level 1 to level 10 and beyond.
+
+== The 10 known levels (as of 2026)
+
+[cols="`1,2,2,2`", options="`header`"] |=== | Level | What it catches |
+Example | First appeared
+
+[verse]
+--
+1. Basic Types
+Mixing incompatible primitives
+`+1 + "hello"+` rejected
+FORTRAN (1957)
+--
+
+[verse]
+--
+2. Algebraic Data Types
+Missing cases, impossible states
+`+Option<T>+` forces handling `+None+`
+ML (1973)
+--
+
+[verse]
+--
+3. Parametric Polymorphism
+Accidental type assumptions in generic code
+`+id<T>(x: T) → T+` cannot inspect `+T+`
+System F (1972)
+--
+
+[verse]
+--
+4. Higher-Kinded Types
+Incompatible abstractions
+`+List+` and `+Option+` are both `+Functor+`
+Haskell (1990)
+--
+
+[verse]
+--
+5. GADTs
+Ill-typed expressions in DSLs
+`+Expr<Int>+` vs `+Expr<Bool>+` tracked by the type system
+GHC (~2005)
+--
+
+[verse]
+--
+6. Dependent Types
+Logical errors provable at compile time
+`+Vec 3 Int+`; `+head+` on empty is a type error
+LF (1986), Coq, Agda, Idris
+--
+
+[verse]
+--
+7. Linear / Affine Types
+Resource leaks, double-free, use-after-close
+File handle closed exactly once
+Linear Logic (1987), Rust, Idris 2
+--
+
+[verse]
+--
+8. Refinement Types
+Violated preconditions
+`+{x : Int \| x > 0}+`; division by zero is a type error
+LF/SMT (2000s), F*, Liquid Haskell
+--
+
+[verse]
+--
+9. Session Types
+Protocol violations in communication
+Send Int, receive Bool, close; out-of-order is a type error
+Honda (1993)
+--
+
+[verse]
+--
+10. Homotopy / Cubical Types
+Unsound type equivalences
+`+Bool ≃ Bool+` has exactly two valid equivalences
+HoTT (2013), cubicaltt, Agda –cubical
+--
+
+|===
+
+The correspondence to Aristotle’s 10 categories is a motivating
+observation, not a theorem. It may be coincidence, deep structure, or an
+artifact of how we count. We track it because it suggests the list may
+not be complete.
+
+== The five routes
+
+We do not know which approach will work. We try five, share results, and
+document failures.
+
+All routes share a common test suite (10 challenge programs, one per
+level) and interface type specification.
+
+[cols="`1,2,3,2`", options="`header`"] |=== | Route | Strategy | Key
+question | Levels native
+
+[verse]
+--
+α (Alpha): Extend Idris 2
+Start from the strongest existing foundation; push upward via elaborator reflection and plugins
+How far can you extend a language before you need to replace its core?
+1–7 native; 8–9 via encoding
+--
+
+[verse]
+--
+β (Beta): Dyadic Split
+Two languages sharing syntax/parser, diverging at the type checker (QTT core + Cubical core)
+Can two type checkers share enough to feel like one language?
+β-1: 1–8; β-2: 8–10
+--
+
+[verse]
+--
+γ (Gamma): Aspect Injection
+Stable dependent+QTT core; weave independent type-checking aspects at defined compilation points
+Can independent type checkers compose when a single proof needs guarantees from multiple levels?
+Core: 1–7; Aspects: 8, 9, 10
+--
+
+[verse]
+--
+δ (Delta): Aggregate Bridge
+Use existing best-in-class languages per level range; bridge through shared ABI/FFI
+Can type safety survive crossing a language boundary?
+Idris 2 (1–7), F* (8), Scribble (9), Agda –cubical (10)
+--
+
+[verse]
+--
+ε (Epsilon): Clean Slate
+New core calculus unifying everything; no legacy constraints
+Is there a consistent type theory that subsumes all 10 levels, or is the fragmentation fundamental?
+All (if it exists)
+--
+
+|===
+
+== Progress
+
+[cols="`1,1,1,1,1,1,1,1,1,1,1`", options="`header`"] |=== | Route | L1 |
+L2 | L3 | L4 | L5 | L6 | L7 | L8 | L9 | L10
+
+[verse]
+--
+α Extend
+✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓ | ✓~ | ✓~ | ✗
+--
+
+[verse]
+--
+β Dyadic
+. | . | . | . | . | . | . | . | . | .
+--
+
+[verse]
+--
+γ Aspect
+. | . | . | . | . | . | . | . | . | .
+--
+
+[verse]
+--
+δ Aggregate
+. | . | . | . | . | . | . | . | . | .
+--
+
+[verse]
+--
+ε Clean
+. | . | . | . | . | . | . | . | . | .
+--
+
+|===
+
+_✓ = passing, ✓~ = passing via encoding, . = not started, ✗ = proven
+impossible on this route_
+
+Route α is enforced by CI (`+scripts/check-idris2-proofs.sh+`). L8 and
+L9 pass via encodings (dependent pairs for refinement; Brady’s indexed
+monad for sessions), not native type formers. L10 is route α’s
+documented wall (QTT and cubical type theory are different foundations).
+
+Route δ has a measurement bridge (Typell) mapped level-by-level, but no
+running implementation yet.
+
+== TypeFix Zero (TF0)
+
+A standalone calibration calculus. Where Kategoria explores routes
+toward high-assurance type safety, TF0 strips down to the smallest
+typed, Turing-complete core that remains mathematically honest: universe
+stratification, function types, naturals, lambda, and one explicit
+fixed-point primitive.
+
+TF0 is a diagnostic tool for testing claims about universe hierarchies,
+the total/partial boundary, and the minimum machinery for
+Turing-completeness. It is not a Katoria implementation target.
+
+== Level 11 and beyond
+
+== [CAUTION]
+
+== State of the art as of 2026. Type theory is not finished. If you know of a level we have missed, open an issue. We would rather discover we were wrong than remain confidently incomplete.
+
+Active research areas that may constitute future levels:
+
+[cols="`1,2,2`", options="`header`"] |=== | Candidate | What it would
+add | Maturity
+
+[verse]
+--
+Graded types
+Semiring-indexed resource tracking (generalises linear)
+Working compiler (Granule)
+--
+
+[verse]
+--
+Effect types
+Side effects tracked and controlled in the type system
+Production-ready (Koka)
+--
+
+[verse]
+--
+Modal types
+Necessity, possibility, temporality as type operators
+30+ years of theory, limited implementations
+--
+
+[verse]
+--
+Directed types
+Types as categories, morphisms as programs
+Very early (2023 preprints)
+--
+
+[verse]
+--
+Capability types
+Authority-based access control in the type system
+Proven in Pony, language inactive
+--
+
+[verse]
+--
+Observational equality
+Alternative foundation for equality (not cubical)
+May replace Level 10 rather than extend it
+--
+
+[verse]
+--
+Sized types
+Termination guaranteed by structural size
+Stable in Agda
+--
+
+[verse]
+--
+Gradual types
+Sound mixing of static and dynamic typing
+Mature theory, production use
+--
+
+|===
+
+== What is standard and what is ours
+
+[cols="`1,2,2`", options="`header`"] |=== | Concept | Status | Home
+
+[verse]
+--
+The 10 levels of type safety
+Standard (assembled from existing literature)
+The framing is ours
+--
+
+[verse]
+--
+Route α (extend Idris 2)
+Standard engineering strategy
+The specific encodings and L10 wall are ours
+--
+
+[verse]
+--
+Routes β–ε
+*Novel assembly strategies*
+The routes themselves
+--
+
+[verse]
+--
+TF0
+Standard minimal calculus construction
+The calibration application is ours
+--
+
+[verse]
+--
+Stumble journal
+*Novel methodology* (shared with echo-types retraction ledger)
+The journal
+--
+
+|===
+
+== How to participate
+
+* *Type theorists:* Tell us when we are wrong. If a route makes an
+unsound assumption or reinvents something solved in 1988, open an issue.
+* *Language developers:* Pick a route. Build. Document decisions in
+`+docs/+`.
+* *Curious readers:* Read the stumble journal. Watching five approaches
+hit five different walls teaches more than any textbook.
+
+There is no winner. The point is to map the territory.
+
+== Documentation
+
+* link:EXPLAINME.adoc[EXPLAINME] — claim-by-claim receipts and known
+gaps
+* link:Glossary.adoc[Glossary] — terminology reference
+* `+docs/stumble-journal/+` — what went wrong, why, and what we learned
+* `+docs/shine-journal/+` — what worked unexpectedly well
+* `+docs/cross-pollination/+` — discoveries from one route that helped
+another
+* `+docs/methodology/+` — constraint-first development, LLM
+collaboration field reports
+
+== Build
+
+=== [source,bash]
+
+== Route α (Idris 2)
+
+cd routes/alpha-extend/ idris2 –build Alpha.ipkg
+
+== CI check (rejects axiom smuggling)
+
+=== scripts/check-idris2-proofs.sh
+
+== License
+
+SPDX-License-Identifier: MPL-2.0 — see link:LICENSE[LICENSE].| Mature
+theory, production use |===
+
+== What is standard and what is ours
+
+[cols="`1,2,2`", options="`header`"] |=== | Concept | Status | Home
+
+[verse]
+--
+The 10 levels of type safety
+Standard (assembled from existing literature)
+--
