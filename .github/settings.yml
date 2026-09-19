@@ -7,14 +7,14 @@
 # applied by the probot/settings app when changes are pushed to the default
 # branch. Install the app at: https://github.com/apps/settings
 #
-# Template file — replace {{REPO}} and {{DESCRIPTION}} with actual values.
+# Template file — replace kategoria and Five approaches to building a programming language with every known level of type safety (10 levels, from basic types to homotopy types). An exploration mapping the territory of type safety via five concurrent routes (extend, dyadic, aspect, aggregate, clean-slate) sharing a common test suite and documenting all failures in a stumble journal. with actual values.
 
 # ─── Repository Settings ───────────────────────────────────────────────────────
 
 repository:
-  name: "{{REPO}}"
-  description: "{{DESCRIPTION}}"
-  homepage: "https://github.com/hyperpolymath/{{REPO}}"
+  name: "kategoria"
+  description: "Five approaches to building a programming language with every known level of type safety (10 levels, from basic types to homotopy types). An exploration mapping the territory of type safety via five concurrent routes (extend, dyadic, aspect, aggregate, clean-slate) sharing a common test suite and documenting all failures in a stumble journal."
+  homepage: "https://github.com/hyperpolymath/kategoria"
   private: false
   has_issues: true
   has_projects: true
