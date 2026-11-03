@@ -27,5 +27,24 @@ jobs:
       - uses: actions/checkout@v6.0.2
 
 
+      # The GitHub hosted runner does not include 'nix'. The old direct
+      # 'nix shell ...' step exited 127 before checking any Idris module.
+      # Use the same pinned official Idris2 0.8.0 revision as VCL-UT's
+      # already-established proof corpus gate, without a floating setup action.
+      - name: Build and install pinned Idris2 0.8.0
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends chezscheme make gcc
+          git clone --no-checkout https://github.com/idris-lang/Idris2.git /tmp/Idris2
+          git -C /tmp/Idris2 checkout 15a3e4e70843f7a34100f6470c04b791330788df
+          make -C /tmp/Idris2 bootstrap SCHEME=chezscheme
+          make -C /tmp/Idris2 install PREFIX="$HOME/.idris2"
+          echo "$HOME/.idris2/bin" >> "$GITHUB_PATH"
+          echo "IDRIS2_PREFIX=$HOME/.idris2" >> "$GITHUB_ENV"
+
       - name: Run proof gate
-        run: nix shell nixpkgs#idris2 -c ./scripts/check-idris2-proofs.sh
+        run: |
+          set -euo pipefail
+          idris2 --version
+          ./scripts/check-idris2-proofs.sh

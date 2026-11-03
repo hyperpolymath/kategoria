@@ -1,0 +1,42 @@
+// SPDX-License-Identifier: CC-BY-SA-4.0
+= Proof reconciliation — Kategoria research routes
+:revdate: 2026-11-01
+
+Status: *INVENTORY / NOT RECONCILED*.
+
+The source-grounded current proof gate is the Idris2
+`scripts/check-idris2-proofs.sh` run by
+`.github/workflows/proof-gate.yml`. It checks the demonstrations in
+`examples/` and `routes/alpha-extend/`. Preserve it.
+
+A **type-system feature demo is not automatically a theorem** and
+the first ten feature labels are not the upper bound of Kategoria's
+research. Nor do they equal VCL-UT's similarly numbered query gates.
+
+== Candidate migration and reproof register
+
+[cols="1,3,3",options="header"]
+|===
+|Candidate |Existing source |Required next evidence
+|Parametric polymorphism |Level03_Polymorphism.idr |Name the exact genericity/parametricity theorem; a typechecked generic identity alone is not a free theorem
+|Session/interaction safety |Level09_SessionTypes.idr |Specify small-step/runtime semantics and a non-vacuous progress claim before trying to transport a proof
+|Cubical-flavoured models |Level10_CubicalTypes.idr |Identify actual theorem, whether it requires Agda's full Cubical mode, and its separate compiler profile
+|Advanced type disciplines |Kategoria routes and TypeLL bridge |Inventory semantics and proof obligations independently; do not assume a single numbered hierarchy
+|===
+
+For independent *theory* statements the default Agda invocation is:
+
+[source,shell]
+----
+agda --safe --without-K --cubical-compatible <module.agda>
+----
+
+This explicitly enables Cubical-compatibility support; it is not
+the full `--cubical` feature. Where a genuine Cubical proof needs a
+different profile, document the exception and its assumptions. No
+Kategoria Agda/Lean/Coq correspondence has been verified by this note.
+
+Coq/Rocq and Lean may independently reprove translated statements or
+check suitably exported witnesses. Every claim of cross-prover
+correspondence needs separate statements, assumptions and evidence.
+Mathesis catalogues receipts; Kategoria retains its own research ownership.
